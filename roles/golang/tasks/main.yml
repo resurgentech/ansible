@@ -1,0 +1,3 @@
+- name: golang
+  include_role:
+    name: gantsign.golang

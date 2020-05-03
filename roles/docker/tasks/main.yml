@@ -1,0 +1,3 @@
+- name: docker install
+  include_role:
+    name: geerlingguy.docker
