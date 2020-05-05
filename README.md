@@ -17,9 +17,11 @@ This allows you to use ansible locally to configure the machine as opposed to re
 Installs requied 3rd party playbooks
 
 ### Run ansible to configure machine ###
+
 ```
-ansible-playbook -u=$USER --connection=local -i localhost.inventory.yml dev_desktop.yml -K
+./setup_localhost.sh
 ```
+
 Will prompt for BECOME password, in this context, this is current user's password required to run sudoss.
 
 ## Table of Contents ##
@@ -40,6 +42,9 @@ Config file for ansible.
 Ansible 'playbook' for development desktop machine.
 
 ### inventory.localhost.yml ###
+Inventory file for installing on localhost.
+
+### setup_localhost.sh ###
 Inventory file for installing on localhost.
 
 ## Notes ##

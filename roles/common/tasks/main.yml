@@ -1,4 +1,4 @@
 ---
 # This playbook runs os specific docker install scripts.
-- include: common-ubuntu1804.yml
+- include: common-ubuntu.yml
   when: (ansible_distribution == "Ubuntu")
