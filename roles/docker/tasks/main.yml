@@ -1,3 +1,6 @@
+- include_vars: docker_ubuntu_20.04.yml
+  when: ansible_facts['distribution_release'] == "focal"
+
 - name: docker install
   include_role:
     name: geerlingguy.docker

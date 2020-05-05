@@ -1,8 +1,0 @@
----
-# Site playbook for resurgent technologies, inc. development desktops
-- name: common roles for physical and virtual hosts
-  hosts: localhost
-  remote_user: root
-  roles:
-    - golang
-    - docker
