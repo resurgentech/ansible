@@ -3,4 +3,8 @@
   apt:
       name: [ python-apt, python3-apt ]
       state: present
-      
+
+- name: Ubuntu Common development tools
+  apt:
+      name: [ build-essential ]
+      state: present
