@@ -14,15 +14,17 @@ sudo ./manual_scripts/ansible_install/ansible_install_ubuntu_20.04.sh
 This allows you to use ansible locally to configure the machine as opposed to registering it with a remote ansible instance like Tower.
 
 ### Install ansible galaxy modules ###
-Installs requied 3rd party playbooks
-
+This step will install the required 3rd party modules.
+```
+sudo ./manual_scripts/galaxy.sh
+```
 ### Run ansible to configure machine ###
 
 ```
 ./setup_localhost.sh
 ```
 
-Will prompt for BECOME password, in this context, this is current user's password required to run sudoss.
+Will prompt for BECOME password, in this context, this is current user's password required to run sudo.
 
 ## Table of Contents ##
 
@@ -45,7 +47,7 @@ Ansible 'playbook' for development desktop machine.
 Inventory file for installing on localhost.
 
 ### setup_localhost.sh ###
-Inventory file for installing on localhost.
+Helper for installing.
 
 ## Notes ##
 structure loosely based on https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
