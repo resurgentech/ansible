@@ -2,3 +2,6 @@
 - name: jetbrains toolbox
   include_role:
     name: jaredhocutt.jetbrains_toolbox
+
+- include: full_remote_mode.yml
+  when: jetbrains_full_remote|bool

@@ -1,0 +1,3 @@
+{{ ansible_user }} ALL=(ALL)       NOPASSWD: ALL
+Defaults:{{ ansible_user }} !requiretty
+Defaults:{{ ansible_user }} !env_reset

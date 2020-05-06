@@ -4,7 +4,7 @@
   hosts: all, localhost
   remote_user: root
   roles:
-    - common
-    - golang
-    - docker
+    #- common
+    #- golang
+    #- docker
     - jetbrains

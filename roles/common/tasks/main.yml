@@ -2,3 +2,28 @@
 # This installs common base of packages
 - include: common-ubuntu.yml
   when: (ansible_distribution == "Ubuntu")
+
+- name: Fixing sudo access for user
+  template:
+    dest: "/etc/sudoers.d/{{ ansible_user }}"
+    src: "sudoers_template.j2"
+    mode: 0440
+    owner: root
+    group: root
+    validate: 'visudo -cf %s'
+
+- name: Set includedir in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "#includedir /etc/sudoers.d"
+    regexp: '^#includedir'
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Set secure_path in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin"
+    regexp: '^Defaults\s*secure_path'
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"

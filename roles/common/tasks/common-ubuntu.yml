@@ -6,5 +6,5 @@
 
 - name: Ubuntu Common development tools
   apt:
-      name: [ build-essential ]
+      name: [ build-essential, cmake ]
       state: present
