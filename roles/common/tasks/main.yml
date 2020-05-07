@@ -27,3 +27,9 @@
     regexp: '^Defaults\s*secure_path'
     state: present
     validate: "/usr/sbin/visudo -cf %s"
+
+- name: Stop auto scanning for printers, it was really annoying
+  systemd:
+    name: cups-browsed
+    enabled: false
+    state: stopped
