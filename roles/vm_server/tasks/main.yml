@@ -1,0 +1,24 @@
+
+#- name: Install KVM
+#  include_role:
+#    name: mrlesmithjr.kvm
+
+#- name: Install virt-manager
+#  apt:
+#    name: virt-manager
+#    state: present
+#  when: ansible_facts['distribution'] == "Ubuntu"
+
+#- name: Install Vagrant
+#  include_role:
+#    name: andrewrothstein.vagrant
+
+- name: Check for libvirt
+  shell: sudo -u {{ ansible_user }} vagrant plugin list | grep libvirt
+  register: libvirt_present
+  changed_when: false
+  ignore_errors: yes
+
+- name: Install Vagrant libvirt provider
+  shell: sudo -u {{ ansible_user }} vagrant plugin install vagrant-libvirt
+  when: libvirt_present.rc != 0
