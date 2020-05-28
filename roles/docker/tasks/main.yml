@@ -1,5 +1,13 @@
-- include_vars: docker_ubuntu_20.04.yml
-  when: ansible_facts['distribution_release'] == "focal"
+- name: Override ansible_distribution for Pop!_OS compatibility
+  set_fact: ansible_distribution='Ubuntu'
+  when: ansible_distribution == 'Pop!_OS'
+
+- name: Override ansible_os_family for Pop!_OS compatibility
+  set_fact: ansible_os_family='Debian'
+  when: ansible_os_family == 'Pop!_OS'
+
+- debug:
+    msg: "ansible_distribution={{ ansible_distribution }}"
 
 - name: docker install
   include_role:
