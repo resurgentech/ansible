@@ -3,6 +3,9 @@
 - include: common-ubuntu.yml
   when: (ansible_distribution == "Ubuntu")
 
+- include: common-centos.yml
+  when: (ansible_distribution == "CentOS")
+
 - name: Fixing sudo access for user
   template:
     dest: "/etc/sudoers.d/{{ ansible_user }}"
@@ -33,3 +36,4 @@
     name: cups-browsed
     enabled: false
     state: stopped
+  ignore_errors: yes
