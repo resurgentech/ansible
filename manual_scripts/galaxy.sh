@@ -5,3 +5,4 @@ ansible-galaxy install ypsman.sshd_config
 ansible-galaxy collection install crivetimihai.virtualization
 ansible-galaxy install mrlesmithjr.kvm
 ansible-galaxy install andrewrothstein.vagrant
+#git clone git@github.com:jaredeh/ansible-vagrant.git ~/.ansible/roles/jaredeh.vagrant

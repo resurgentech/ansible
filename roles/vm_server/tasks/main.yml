@@ -1,23 +1,32 @@
+- name: Override ansible_distribution for Pop!_OS compatibility
+  set_fact: ansible_distribution='Ubuntu'
+  when: ansible_distribution == 'Pop!_OS'
 
-#- name: Install KVM
-#  include_role:
-#    name: mrlesmithjr.kvm
+- name: Override ansible_os_family for Pop!_OS compatibility
+  set_fact: ansible_os_family='Debian'
+  when: ansible_os_family == 'Pop!_OS'
 
-#- name: Install virt-manager
-#  apt:
-#    name: virt-manager
-#    state: present
-#  when: ansible_facts['distribution'] == "Ubuntu"
+- name: Install KVM
+  include_role:
+    name: mrlesmithjr.kvm
 
-#- name: Install Vagrant
-#  include_role:
-#    name: andrewrothstein.vagrant
+- name: Install virt-manager
+  apt:
+    name: virt-manager
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Install Vagrant
+  include_role:
+    name: andrewrothstein.vagrant
 
 - name: Check for libvirt
   shell: sudo -u {{ ansible_user }} vagrant plugin list | grep libvirt
   register: libvirt_present
   changed_when: false
   ignore_errors: yes
+  args:
+    warn: false
 
 - name: Install Vagrant libvirt provider
   shell: sudo -u {{ ansible_user }} vagrant plugin install vagrant-libvirt
