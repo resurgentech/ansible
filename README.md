@@ -16,7 +16,7 @@ This allows you to use ansible locally to configure the machine as opposed to re
 ### Install ansible galaxy modules ###
 This step will install the required 3rd party modules.
 ```
-sudo ./manual_scripts/galaxy.sh
+./manual_scripts/galaxy.sh
 ```
 ### Run ansible to configure machine ###
 
