@@ -7,6 +7,8 @@
   register: godoc_install
   changed_when: false
   ignore_errors: yes
+  args:
+    warn: false
 
 - name: install godoc
   shell: sudo -u {{ ansible_user }} bash -c "source /etc/profile.d/golang.sh; go get golang.org/x/tools/cmd/godoc"

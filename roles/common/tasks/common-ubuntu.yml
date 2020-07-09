@@ -1,10 +1,15 @@
 ---
-- name: Ubuntu Install python-apt
+- name: Ubuntu Install python
   apt:
-      name: [ python-apt, python3-apt ]
+      name: [ python-apt, python3-apt, python3-pip ]
       state: present
 
 - name: Ubuntu Common development tools
   apt:
       name: [ build-essential, cmake, git]
+      state: present
+
+- name: Ubuntu openvpn install
+  apt:
+      name: [ network-manager-openvpn-gnome ]
       state: present
