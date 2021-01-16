@@ -1,0 +1,7 @@
+---
+# This installs yubikey base of packages
+- include: yubikey-ubuntu.yml
+  when: (ansible_distribution == "Ubuntu") or (ansible_distribution == 'Pop!_OS')
+
+- include: yubikey-centos.yml
+  when: (ansible_distribution == "CentOS")

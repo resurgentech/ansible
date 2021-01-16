@@ -1,0 +1,5 @@
+---
+- name: Centos Install Yubikey SW
+  dnf:
+      name: [ ykclient ]
+      state: present
