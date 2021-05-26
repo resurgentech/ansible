@@ -1,0 +1,6 @@
+---
+- name: Ubuntu openvpn install
+  apt:
+      name: [ network-manager-openvpn-gnome ]
+      state: present
+  when: (ansible_distribution == "Ubuntu") or (ansible_distribution == 'Pop!_OS')

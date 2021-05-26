@@ -8,8 +8,3 @@
   apt:
       name: [ build-essential, cmake, git]
       state: present
-
-- name: Ubuntu openvpn install
-  apt:
-      name: [ network-manager-openvpn-gnome ]
-      state: present
