@@ -1,9 +1,0 @@
----
-- name: Ubuntu Add Yubico Authenticator repository
-  apt_repository:
-    repo: 'ppa:yubico/stable'
-
-- name: Ubuntu Install packages
-  apt:
-      name: [ yubikey-manager, yubioath-desktop, yubikey-personalization-gui ]
-      state: present
