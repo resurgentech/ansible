@@ -10,3 +10,4 @@
     - docker
     - jetbrains
     - vm_server
+    - nvm_node

@@ -1,0 +1,3 @@
+- name: nvm for node
+  include_role:
+    name: grzegorznowak.nvm_node
