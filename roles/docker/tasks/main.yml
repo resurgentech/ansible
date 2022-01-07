@@ -1,3 +1,5 @@
+# Installs docker
+
 - name: Override ansible_distribution for Pop!_OS compatibility
   set_fact: ansible_distribution='Ubuntu'
   when: ansible_distribution == 'Pop!_OS'

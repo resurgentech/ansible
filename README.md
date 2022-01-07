@@ -1,14 +1,14 @@
-# Basic Ansible Configurations for Desktop and Workstations
+# Basic Ansible Configurations for Desktop, Workstations, and Baremetal servers
 
 ## Using to configure a fresh machine ##
 
 ### Installing ansible locally ###
 
-Run the appropriate script from ./manual_scripts/ansible_install/ with sudo
+Run the appropriate script from ./manual_scripts/ with sudo
 
 Example:
 ```
-sudo ./manual_scripts/ansible_install/ansible_install_ubuntu_20.04.sh
+sudo ./manual_scripts/ansible_install_ubuntu_20.04.sh
 ```
 
 This allows you to use ansible locally to configure the machine as opposed to registering it with a remote ansible instance like Tower.
@@ -16,7 +16,7 @@ This allows you to use ansible locally to configure the machine as opposed to re
 ### Install ansible galaxy modules ###
 This step will install the required 3rd party modules.
 ```
-./manual_scripts/galaxy.sh
+ansible-galaxy install -r requirements.yml --force
 ```
 ### Run ansible to configure machine ###
 

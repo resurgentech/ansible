@@ -1,0 +1,6 @@
+---
+# Handler to take care of common notifications.
+- name: restart chrony
+  systemd: 
+    name: chronyd
+    state: restarted

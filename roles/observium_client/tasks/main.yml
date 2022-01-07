@@ -1,0 +1,86 @@
+---
+# This playbook contains common plays that will enable observium monitorability on a node.
+
+### Debian support WIP
+- include: debian.yml
+  when: debian_based|bool
+
+- include: redhat.yml
+  when: redhat_based|bool
+
+- name: Deploy observium Agent binary
+  copy:
+    src: observium_agent
+    dest: /usr/bin/observium_agent
+    mode: 0755
+  tags: observium
+  notify: restart xinetd
+
+- name: Create directory to store agent library files
+  file:
+    path: /usr/lib/observium_agent/local
+    state: directory
+
+- name: Deploy observium Agent binary
+  copy:
+    src: agent-local/{{ item }}
+    dest: /usr/lib/observium_agent/local/{{ item }}
+    mode: 0755
+  tags: observium
+  with_items:
+    - ioping
+    - hddtemp
+    - lmsensors
+    - dmi
+    - hdarray
+    - rpm
+    - ntpd
+    - ipmitool-sensor
+    - temperature
+    - vmwaretools
+    - virt-what
+    - edac
+    - memcached
+  notify: restart xinetd
+
+- name: Deploy xinetd config file
+  template:
+    src: observium_xinetd.conf.j2
+    dest: /etc/xinetd.d/observium_agent
+  tags: xinetd
+  notify: restart xinetd
+
+- name: Deploy snmp config file
+  template:
+    src: snmpd.conf.j2
+    dest: /etc/snmp/snmpd.conf
+  tags: snmp
+  notify: restart snmp
+
+- name: SNMP firewall opening
+  firewalld:
+    port: 161-162/udp
+    permanent: true
+    state: enabled
+    immediate: yes
+  ignore_errors: yes
+
+- name: Observium Agent firewall opening
+  firewalld:
+    port: 36602/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+  ignore_errors: yes
+
+- name: Enable xinetd and snmpd
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - xinetd
+    - snmpd
+
+- name: Confirm handlers for observium completed
+  meta: flush_handlers

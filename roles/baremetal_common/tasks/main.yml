@@ -1,0 +1,38 @@
+---
+# This installs common base of packages for baremetal servers, 
+#  these would be production vm servers etc.
+
+- include: debian.yml
+  when: debian_based|bool
+
+- include: redhat.yml
+  when: redhat_based|bool
+
+- name: Enable and start acpid for clean shutdowns over ipmi
+  systemd:
+    name: acpid
+    state: started
+    enabled: yes
+  tags: acpid
+
+- name: Enable and start firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: firewalld
+
+- name: Configure chrony file
+  template:
+    src: chrony.conf.j2
+    dest: /etc/chrony.conf
+  tags: chrony
+  notify: restart chrony
+
+- name: Start the new services
+  systemd:
+    name: "{{item}}"
+    state: started
+    enabled: yes
+  with_items:
+    - chronyd

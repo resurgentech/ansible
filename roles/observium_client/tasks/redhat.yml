@@ -1,0 +1,11 @@
+---
+
+- name: Install SNMP service for enabling observium monitoring
+  dnf:
+    state: present
+    name: net-snmp
+
+- name: Install xinetd service for enabling observium monitoring
+  dnf:
+    state: present
+    name: xinetd

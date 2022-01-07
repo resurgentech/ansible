@@ -1,0 +1,18 @@
+---
+
+- name: Check for libvirt vagrant plugin
+  shell: sudo -u {{ item }} vagrant plugin list | grep libvirt
+  register: libvirt_present
+  changed_when: false
+  ignore_errors: yes
+  args:
+    warn: false
+
+- name: Install Vagrant libvirt provider 1
+  shell: sudo -u {{ item }} vagrant plugin install vagrant-libvirt
+  when: libvirt_present.rc != 0 and debian_based|bool
+
+- name: Install Vagrant libvirt provider 2
+  shell: sudo -u {{ item }} CONFIGURE_ARGS="with-libvirt-include=/usr/include/libvirt with-libvirt-lib=/usr/lib64" vagrant plugin install vagrant-libvirt
+  when: libvirt_present.rc != 0 and redhat_based|bool
+  

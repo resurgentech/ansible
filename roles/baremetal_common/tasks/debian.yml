@@ -1,0 +1,5 @@
+---
+- name: Debian common dependencies
+  apt:
+      name: [ wget, acpid, firewalld ]
+      state: present

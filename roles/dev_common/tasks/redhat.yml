@@ -1,0 +1,11 @@
+---
+- name: RedHat Common development tools
+  dnf:
+    name:
+      - "@Development Tools"
+      - cmake
+      - git
+      - rsync
+      - gcc
+      - zlib-devel
+    state: present

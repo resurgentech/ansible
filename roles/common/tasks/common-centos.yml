@@ -1,5 +1,0 @@
----
-- name: Centos Common development tools
-  dnf:
-      name: [ "@Development Tools", cmake, git ]
-      state: present

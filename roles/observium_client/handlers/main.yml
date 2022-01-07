@@ -1,0 +1,10 @@
+---
+- name: restart xinetd
+  systemd:
+    name: xinetd
+    state: restarted
+
+- name: restart snmp
+  systemd:
+    name: snmpd
+    state: restarted

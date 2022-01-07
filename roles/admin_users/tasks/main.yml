@@ -1,0 +1,44 @@
+---
+
+- name: Setup users and add to sudoers group
+  user:
+    name: "{{ item }}"
+    state: present
+    groups: "{{ 'wheel' if redhat_based else 'sudo' }}"
+    append: yes
+  loop: "{{ admin_users }}"
+
+- name: Ensure SSH path for all users exists
+  file:
+    state: directory
+    mode: 0700
+    path:  "/home/{{ item }}/.ssh"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop: "{{ admin_users }}"
+
+- name: Fixing sudo access for users
+  template:
+    dest: "/etc/sudoers.d/{{ item }}"
+    src: "sudoers_template.j2"
+    mode: 0440
+    owner: root
+    group: root
+    validate: 'visudo -cf %s'
+  loop: "{{ admin_users }}"
+
+- name: Set includedir in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "#includedir /etc/sudoers.d"
+    regexp: '^#includedir'
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Set secure_path in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin"
+    regexp: '^Defaults\s*secure_path'
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"

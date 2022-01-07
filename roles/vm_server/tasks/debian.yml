@@ -1,0 +1,13 @@
+---
+
+- name: Debian install KVM
+  dnf:
+    name: "{{ debian_packages_kvm }}"
+    state: present
+  become: yes
+
+- name: Debian install vagrant
+  dnf:
+    name: "{{ debian_packages_vagrant }}"
+    state: present
+  become: yes
