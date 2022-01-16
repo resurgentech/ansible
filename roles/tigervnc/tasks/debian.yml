@@ -1,0 +1,7 @@
+---
+
+- name: Install tigervnc
+  apt:
+    state: present
+    name:
+      - tigervnc-server

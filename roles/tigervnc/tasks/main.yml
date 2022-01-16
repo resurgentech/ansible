@@ -1,0 +1,13 @@
+---
+# Sets up tigervnc
+
+- include: debian.yml
+  when: debian_based|bool
+
+- include: redhat.yml
+  when: redhat_based|bool
+
+- include: per_user.yml
+  loop: "{{ vnc_users }}"
+  loop_control:
+    index_var: index

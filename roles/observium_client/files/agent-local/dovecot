@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo '<<<app-dovecot>>>'
-doveadm stats dump global | tail -1 | tr '\t' '\n' | cut -d '.' -f 1
-

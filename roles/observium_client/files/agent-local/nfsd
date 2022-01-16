@@ -1,7 +1,0 @@
-#!/bin/sh
-if [ -e /proc/net/rpc/nfsd ]
-then 
-    echo '<<<app-nfsd>>>'
-    cat /proc/net/rpc/nfsd
-    echo
-fi

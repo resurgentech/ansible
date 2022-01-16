@@ -1,0 +1,7 @@
+---
+
+- name: Install tigervnc
+  dnf:
+    state: present
+    name:
+      - tigervnc-server

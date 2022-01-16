@@ -1,4 +1,5 @@
 ---
+
 - name: Install epel-release as it's own step to avoid issues.
   dnf:
     state: present
@@ -7,4 +8,18 @@
 - name: Install common dependencies, beyond epel...
   dnf:
     state: present
-    name: [ wget, acpid, firewalld ]
+    name:
+      - wget
+      - acpid
+      - firewalld
+      - cockpit
+      - cockpit-pcp
+      - cockpit-machines
+      - podman
+
+- name: Enable and start cockpit
+  systemd:
+    name: cockpit
+    state: started
+    enabled: yes
+  notify: force enable now cockpit

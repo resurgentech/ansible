@@ -12,7 +12,6 @@ redhat_packages_kvm:
   - libguestfs-tools
   - virt-install
   - virt-top
-  - virt-manager
   - genisoimage
   - ruby
   - ruby-devel
@@ -29,8 +28,9 @@ debian_packages_kvm:
   - libguestfs-tools
   - virtinst
   - virt-top
-  - virt-manager
   - genisoimage
+  - ruby
+  - ruby-dev
 
 selinux_booleans_kvm:
   - {name: staff_use_svirt, state: yes, persistent: yes}

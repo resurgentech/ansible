@@ -6,5 +6,11 @@
 
 - name: Debian Common development tools
   apt:
-    name: [ build-essential, cmake, git]
+    name:
+      - build-essential
+      - cmake
+      - git
+      - rsync
+      - gcc
+      - zlib1g-dev
     state: present

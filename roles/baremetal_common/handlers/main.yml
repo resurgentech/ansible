@@ -1,6 +1,20 @@
 ---
-# Handler to take care of common notifications.
+
 - name: restart chrony
-  systemd: 
+  systemd:
     name: chronyd
     state: restarted
+
+- name: start cockpit
+  systemd:
+    name: cockpit
+    state: started
+
+- name: start podman
+  systemd:
+    name: podman
+    state: started
+
+- name: force enable now cockpit
+  shell: systemctl enable --now cockpit.socket
+  listen: start cockpit

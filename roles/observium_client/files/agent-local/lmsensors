@@ -1,9 +1,0 @@
-#!/bin/bash
-
-lmsensors=`which sensors`
-
-if [ $? -eq 0 ]
-then
-  echo '<<<lmsensors>>>'
-  $lmsensors
-fi

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-pdnsctrl=`which pdns_control`
-
-if [ $? -eq 0 ]
-then
-  echo '<<<app-powerdns>>>'
-  $pdnsctrl show '*'
-fi

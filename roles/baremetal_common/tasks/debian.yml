@@ -1,5 +1,18 @@
 ---
 - name: Debian common dependencies
   apt:
-      name: [ wget, acpid, firewalld ]
-      state: present
+    state: present
+    name:
+      - wget
+      - acpid
+      - firewalld
+      - cockpit
+      - cockpit-pcp
+      - cockpit-machines
+
+- name: Enable and start cockpit
+  systemd:
+    name: cockpit
+    state: started
+    enabled: yes
+  notify: force enable now cockpit

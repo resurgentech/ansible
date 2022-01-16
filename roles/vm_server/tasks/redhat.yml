@@ -11,3 +11,9 @@
     name: "{{ redhat_packages_vagrant }}"
     state: present
   become: yes
+
+- name: RedHat install virt-manager gui
+  dnf:
+    name: virt-manager
+    state: present
+  when: no_gui is undefined

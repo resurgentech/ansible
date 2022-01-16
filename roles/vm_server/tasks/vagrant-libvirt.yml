@@ -15,4 +15,3 @@
 - name: Install Vagrant libvirt provider 2
   shell: sudo -u {{ item }} CONFIGURE_ARGS="with-libvirt-include=/usr/include/libvirt with-libvirt-lib=/usr/lib64" vagrant plugin install vagrant-libvirt
   when: libvirt_present.rc != 0 and redhat_based|bool
-  
