@@ -10,11 +10,6 @@ admin_users: ["{{ ansible_user }}"]
 ## chrony
 ntpserver: pool.ntp.org
 
-## observium_client
-#community_string: <your_community_here>
-#location: <your_location_here>
-#contact: Elmer Fudd <elmer.fudd@acme.com>
-
 ## telegraf
 #influx_server: <your_server_url_here>
 #influx_token: <your_token_here>
