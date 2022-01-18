@@ -7,7 +7,7 @@
 
 - name: Debian install vagrant
   apt:
-    name: "{{ debian_packages_vagrant }}"
+    deb: "{{ debian_packages_vagrant }}"
     state: present
 
 - name: Debian install virt-manager gui

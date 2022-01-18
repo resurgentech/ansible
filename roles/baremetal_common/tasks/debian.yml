@@ -6,13 +6,25 @@
       - wget
       - acpid
       - firewalld
+      - chrony
       - cockpit
       - cockpit-pcp
       - cockpit-machines
 
-- name: Enable and start cockpit
-  systemd:
-    name: cockpit
-    state: started
-    enabled: yes
-  notify: force enable now cockpit
+- name: Debian cockpit-docker
+  apt:
+    state: present
+    deb: "https://launchpad.net/ubuntu/+source/cockpit/215-1~ubuntu19.10.1/+build/18889196/+files/cockpit-docker_215-1~ubuntu19.10.1_all.deb"
+
+- name: Debian Open cockpit port
+  firewalld:
+    port: 9090/tcp
+    permanent: yes
+    zone: public
+    state: enabled
+
+- name: Avoid systemd-networkd excessive wait
+  lineinfile:
+    path: /etc/systemd/system/systemd-networkd-wait-online.service
+    regexp: '^ExecStart=/lib/systemd/systemd-networkd-wait-online$'
+    line: 'ExecStart=/lib/systemd/systemd-networkd-wait-online --timeout=10 --any'

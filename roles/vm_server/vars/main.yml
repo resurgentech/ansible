@@ -20,6 +20,7 @@ debian_packages_kvm:
   - policycoreutils-python-utils
   - qemu-kvm
   - qemu-utils
+  - libvirt-dev
   - libvirt-clients
   - libvirt-daemon-system
   - bridge-utils
@@ -38,5 +39,4 @@ selinux_booleans_kvm:
 redhat_packages_vagrant:
   - "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.rpm"
 
-debian_packages_vagrant:
-  - "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.deb"
+debian_packages_vagrant: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.deb"
