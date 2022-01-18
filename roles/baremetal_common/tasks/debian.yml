@@ -5,7 +5,7 @@
     name:
       - wget
       - acpid
-      - firewalld
+      - ufw
       - chrony
       - cockpit
       - cockpit-pcp

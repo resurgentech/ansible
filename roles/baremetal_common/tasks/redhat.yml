@@ -16,3 +16,10 @@
       - cockpit-pcp
       - cockpit-machines
       - podman
+
+- name: Enable and start firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: firewalld
