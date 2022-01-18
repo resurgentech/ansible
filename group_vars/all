@@ -7,6 +7,11 @@ debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
 ## admin users
 admin_users: ["{{ ansible_user }}"]
 
+## note on vnc user, when vnc is active logging into console fails
+#vnc_users:
+#  - foo
+#  - bar
+
 ## chrony
 ntpserver: pool.ntp.org
 
