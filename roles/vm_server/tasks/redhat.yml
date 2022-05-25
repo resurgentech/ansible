@@ -1,0 +1,19 @@
+---
+
+- name: RedHat install KVM
+  dnf:
+    name: "{{ redhat_packages_kvm }}"
+    state: present
+  become: yes
+
+- name: RedHat install vagrant
+  dnf:
+    name: "{{ redhat_packages_vagrant }}"
+    state: present
+  become: yes
+
+- name: RedHat install virt-manager gui
+  dnf:
+    name: virt-manager
+    state: present
+  when: no_gui is undefined

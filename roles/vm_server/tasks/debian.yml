@@ -1,0 +1,17 @@
+---
+
+- name: Debian install KVM
+  apt:
+    name: "{{ debian_packages_kvm }}"
+    state: present
+
+- name: Debian install vagrant
+  apt:
+    deb: "{{ debian_packages_vagrant }}"
+    state: present
+
+- name: Debian install virt-manager gui
+  apt:
+    name: virt-manager
+    state: present
+  when: no_gui is undefined

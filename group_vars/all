@@ -1,9 +1,27 @@
 
-docker_edition: 'ce'
-docker_package: "docker-{{ docker_edition }}"
-docker_package_state: present
-docker_service_state: started
-docker_service_enabled: true
-docker_restart_handler_state: restarted
+## distro
+###  distros are 100% supported in all roles
+redhat_based: "{{ (ansible_distribution in ['CentOS', 'RedHat', 'Fedora', 'Rocky']) }}"
+debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
 
+## admin users
+admin_users: ["{{ ansible_user }}"]
+
+## note on vnc user, when vnc is active logging into console fails
+#vnc_users:
+#  - foo
+#  - bar
+
+## chrony
+ntpserver: pool.ntp.org
+
+## telegraf
+#influx_server: <your_server_url_here>
+#influx_token: <your_token_here>
+#influx_org: <your_org_here>
+#influx_bucket: <your_bucket_here>
+
+## jetbrains
+### set 'jetbrains_full_remote: true' to enable remote root ssh login, makes 
+### some remote debugging with pycharm, etc easier.
 jetbrains_full_remote: false

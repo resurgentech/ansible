@@ -1,0 +1,16 @@
+---
+- name: Debian Install python
+  apt:
+    name: [ python-apt, python3-apt, python3-pip ]
+    state: present
+
+- name: Debian Common development tools
+  apt:
+    name:
+      - build-essential
+      - cmake
+      - git
+      - rsync
+      - gcc
+      - zlib1g-dev
+    state: present

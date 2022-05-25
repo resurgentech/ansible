@@ -1,0 +1,7 @@
+---
+# Still working on this
+
+- name: Debian Install Telegraf
+  apt:
+    state: present
+    name: [ telegraf ]

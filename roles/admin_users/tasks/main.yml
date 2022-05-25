@@ -1,19 +1,31 @@
 ---
-# This installs common base of packages
-- include: common-ubuntu.yml
-  when: (ansible_distribution == "Ubuntu") or (ansible_distribution == 'Pop!_OS')
 
-- include: common-centos.yml
-  when: (ansible_distribution == "CentOS")
+- name: Setup users and add to sudoers group
+  user:
+    name: "{{ item }}"
+    state: present
+    groups: "{{ 'wheel' if redhat_based else 'sudo' }}"
+    append: yes
+  loop: "{{ admin_users }}"
 
-- name: Fixing sudo access for user
+- name: Ensure SSH path for all users exists
+  file:
+    state: directory
+    mode: 0700
+    path:  "/home/{{ item }}/.ssh"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  loop: "{{ admin_users }}"
+
+- name: Fixing sudo access for users
   template:
-    dest: "/etc/sudoers.d/{{ ansible_user }}"
+    dest: "/etc/sudoers.d/{{ item }}"
     src: "sudoers_template.j2"
     mode: 0440
     owner: root
     group: root
     validate: 'visudo -cf %s'
+  loop: "{{ admin_users }}"
 
 - name: Set includedir in sudoers
   lineinfile:
@@ -30,10 +42,3 @@
     regexp: '^Defaults\s*secure_path'
     state: present
     validate: "/usr/sbin/visudo -cf %s"
-
-- name: Stop auto scanning for printers, it was really annoying
-  systemd:
-    name: cups-browsed
-    enabled: false
-    state: stopped
-  ignore_errors: yes

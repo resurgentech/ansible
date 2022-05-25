@@ -1,0 +1,25 @@
+---
+
+- name: Install epel-release as it's own step to avoid issues.
+  dnf:
+    state: present
+    name: epel-release
+
+- name: Install common dependencies, beyond epel...
+  dnf:
+    state: present
+    name:
+      - wget
+      - acpid
+      - firewalld
+      - cockpit
+      - cockpit-pcp
+      - cockpit-machines
+      - podman
+
+- name: Enable and start firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: firewalld

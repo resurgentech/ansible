@@ -1,0 +1,19 @@
+---
+# Installing Telegraf client
+
+- include: debian.yml
+  when: debian_based|bool
+
+- include: redhat.yml
+  when: redhat_based|bool
+
+- name: Configure Telegraf config
+  template:
+    src: telegrafconf.j2
+    dest: /etc/telegraf/telegraf.conf
+
+- name: Start the new services
+  systemd:
+    name: telegraf
+    state: started
+    enabled: yes

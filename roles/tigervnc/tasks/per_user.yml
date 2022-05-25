@@ -1,0 +1,38 @@
+---
+
+- name: Ensure .vnc directory per user
+  file:
+    state: directory
+    mode: 0755
+    path:  "/home/{{ item }}/.vnc"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+
+- name: Set up .vnc/config per user
+  template:
+    dest: "/home/{{ item }}/.vnc/config"
+    src: "config.j2"
+    mode: 0644
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    force: no
+
+- name: "Create vncserver config files for {{ item }}"
+  lineinfile:
+    path: /etc/tigervnc/vncserver.users
+    line: ":{{ index + 2 }}={{ item }}"
+
+- name: Open vncserver ports
+  firewalld:
+    port: "590{{ index + 2 }}/tcp"
+    zone: public
+    permanent: yes
+    state: enabled
+  notify: reload firewalld
+
+- name: "Enable and start vncserver for {{ item }}"
+  systemd:
+    name: "vncserver@:{{ index + 2 }}"
+    state: started
+    daemon_reload: yes
+    enabled: yes

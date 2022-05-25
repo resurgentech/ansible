@@ -1,4 +1,6 @@
 ---
+# Catch all for missing stuff that is only relevant for GUI based systems
+
 - name: Ubuntu openvpn install
   apt:
       name: [ network-manager-openvpn-gnome ]
