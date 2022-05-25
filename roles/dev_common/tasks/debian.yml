@@ -12,5 +12,7 @@
       - git
       - rsync
       - gcc
-      - zlib1g-dev
+      - gnupg
+      - rpm
+      - cppcheck
     state: present

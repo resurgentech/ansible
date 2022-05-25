@@ -13,3 +13,10 @@
     enabled: false
     state: stopped
   ignore_errors: yes
+
+- name: Various python dependancies
+  pip:
+    name:
+      - jinja2
+      - GitPython
+      - pyaml
