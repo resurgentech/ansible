@@ -10,6 +10,7 @@
     state: present
     name:
       - wget
+      - curl
       - acpid
       - firewalld
       - cockpit
@@ -17,9 +18,10 @@
       - cockpit-machines
       - podman
 
-- name: Enable and start firewalld
+- name: Enable and start cockpit
   systemd:
-    name: firewalld
-    state: started
+    name: cockpit
     enabled: yes
-  tags: firewalld
+  # this line is not idempotent, what is above is, if we need a restart for a config change
+  # that should be done with a handler.
+  # notify: force enable now cockpit
