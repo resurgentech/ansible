@@ -1,4 +1,5 @@
 ---
 
-- name: reload firewalld
-  command: firewall-cmd --reload
+- name: restart systemd daemon
+  shell: systemctl daemon-reload
+#    daemon_reload: yes

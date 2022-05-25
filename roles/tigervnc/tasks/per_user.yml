@@ -27,12 +27,11 @@
     port: "590{{ index + 2 }}/tcp"
     zone: public
     permanent: yes
+    immediate: yes
     state: enabled
-  notify: reload firewalld
 
 - name: "Enable and start vncserver for {{ item }}"
   systemd:
     name: "vncserver@:{{ index + 2 }}"
-    state: started
-    daemon_reload: yes
     enabled: yes
+  notify: restart systemd daemon
