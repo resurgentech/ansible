@@ -12,15 +12,17 @@ redhat_packages_kvm:
   - libguestfs-tools
   - virt-install
   - virt-top
+  - virt-manager
   - genisoimage
   - ruby
   - ruby-devel
+  - ansible
+  - openssl-devel
 
 debian_packages_kvm:
   - policycoreutils-python-utils
   - qemu-kvm
   - qemu-utils
-  - libvirt-dev
   - libvirt-clients
   - libvirt-daemon-system
   - bridge-utils
@@ -29,14 +31,9 @@ debian_packages_kvm:
   - libguestfs-tools
   - virtinst
   - virt-top
+  - virt-manager
   - genisoimage
-  - ruby
-  - ruby-dev
+  - ansible
 
 selinux_booleans_kvm:
   - {name: staff_use_svirt, state: yes, persistent: yes}
-
-redhat_packages_vagrant:
-  - "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.rpm"
-
-debian_packages_vagrant: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/vagrant_{{ vagrant_version }}_x86_64.deb"

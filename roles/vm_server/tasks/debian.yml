@@ -1,17 +1,14 @@
 ---
 
 - name: Debian install KVM
-  apt:
+  dnf:
     name: "{{ debian_packages_kvm }}"
     state: present
+  become: yes
 
-- name: Debian install vagrant
-  apt:
-    deb: "{{ debian_packages_vagrant }}"
+- name: Debian install vagrant docker script
+  copy:
+    src: vagrant.docker
+    dest: /usr/bin/vagrant
+    mode: '0777'
     state: present
-
-- name: Debian install virt-manager gui
-  apt:
-    name: virt-manager
-    state: present
-  when: no_gui is undefined

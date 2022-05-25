@@ -6,14 +6,8 @@
     state: present
   become: yes
 
-- name: RedHat install vagrant
-  dnf:
-    name: "{{ redhat_packages_vagrant }}"
-    state: present
-  become: yes
-
-- name: RedHat install virt-manager gui
-  dnf:
-    name: virt-manager
-    state: present
-  when: no_gui is undefined
+- name: RedHat install vagrant podman script
+  copy:
+    src: vagrant.podman
+    dest: /usr/bin/vagrant
+    mode: '0777'
