@@ -1,5 +1,14 @@
 ---
 # Still working on this
+- name: Add apt_key for telegraf
+  ansible.builtin.apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Add specified repository into sources list
+  ansible.builtin.apt_repository:
+    repo: deb http://repos.influxdata.com/ubuntu focal stable
+    state: present
 
 - name: Debian Install Telegraf
   apt:
