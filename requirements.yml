@@ -1,5 +1,6 @@
-- src: gantsign.golang
-- src: geerlingguy.docker
-- src: jaredhocutt.jetbrains_toolbox
-- src: ypsman.sshd_config
-- src: grzegorznowak.nvm_node
+---
+roles:
+  - name: gantsign.golang
+  - name: geerlingguy.docker
+  - name: grzegorznowak.nvm_node
+  - name: jaredhocutt.jetbrains_toolbox
