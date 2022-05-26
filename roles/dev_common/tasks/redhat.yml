@@ -9,4 +9,16 @@
       - gcc
       - zlib-devel
       - gnupg
+      - bc
+      - newt
+      - slang
+      - xmlto
+      - net-tools
+      - rpm-build
+      - dpkg-dev
+      - zstd
+      - python3
+      - python3-devel
+      - python3-docutils
+      - python3-pip
     state: present

@@ -1,0 +1,15 @@
+---
+# This installs common base of packages for desktop / workstation machines
+
+- include: debian.yml
+  when: debian_based|bool
+
+- include: redhat.yml
+  when: redhat_based|bool
+
+- name: Various python dependancies
+  pip:
+    name:
+      - jinja2
+      - GitPython
+      - pyaml
