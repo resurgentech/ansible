@@ -8,6 +8,13 @@
 - include: redhat.yml
   when: redhat_based|bool
 
+- name: Stop auto scanning for printers, it was really annoying
+  systemd:
+    name: cups-browsed
+    enabled: false
+    state: stopped
+  ignore_errors: yes
+
 - name: Enable and start acpid for clean shutdowns over ipmi
   systemd:
     name: acpid
