@@ -1,0 +1,7 @@
+---
+# Site playbook for resurgent technologies, inc. development desktops
+- name: common roles for physical and virtual hosts
+  hosts: all, localhost
+  remote_user: root
+  roles:
+    - dev_common
