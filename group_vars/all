@@ -2,7 +2,7 @@
 ## distro
 ###  distros are 100% supported in all roles
 redhat_based: "{{ (ansible_distribution in ['CentOS', 'RedHat', 'Fedora', 'Rocky']) }}"
-debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
+debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS', 'Debian']) }}"
 
 ## admin users
 admin_users: ["{{ ansible_user }}"]
