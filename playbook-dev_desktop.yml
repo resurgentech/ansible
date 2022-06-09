@@ -4,7 +4,7 @@
   hosts: all, localhost
   remote_user: root
   roles:
-    - common
+    - dev_common
     - gui_common
     - golang
     - docker
