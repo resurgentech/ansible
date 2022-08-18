@@ -25,3 +25,4 @@ ntpserver: pool.ntp.org
 ### set 'jetbrains_full_remote: true' to enable remote root ssh login, makes 
 ### some remote debugging with pycharm, etc easier.
 jetbrains_full_remote: false
+

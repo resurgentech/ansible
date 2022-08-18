@@ -4,9 +4,8 @@
   hosts: all, localhost
   remote_user: root
   roles:
+    - admin_users
     - dev_common
     - gui_common
-    - golang
     - docker
-    - jetbrains
     - vm_server
