@@ -5,7 +5,7 @@ redhat_based: "{{ (ansible_distribution in ['CentOS', 'RedHat', 'Fedora', 'Rocky
 debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
 
 ## admin users
-admin_users: ["{{ ansible_user }}"]
+admin_users: ["{{ ansible_env.USER }}"]
 
 ## note on vnc user, when vnc is active logging into console fails
 #vnc_users:
