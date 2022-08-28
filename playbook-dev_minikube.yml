@@ -2,7 +2,7 @@
 # Site playbook for resurgent technologies, inc. development desktops
 - name: Advanced and problematic optional roles
   hosts: all
-  remote_user: root
   roles:
-    - jetbrains
-    - golang
+    - minikube
+    - minikube_service
+    - kubectl

@@ -1,0 +1,17 @@
+---
+- name: Adding kubernetes repo
+  copy:
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    content: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  register: kubectl_apt
+
+- name: Installing kubectl
+  dnf:
+    state: present
+    name: kubectl

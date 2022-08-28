@@ -1,0 +1,7 @@
+---
+
+- include: debian.yml
+  when: debian_based|bool
+
+- include: redhat.yml
+  when: redhat_based|bool
