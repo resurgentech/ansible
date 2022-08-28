@@ -15,4 +15,19 @@
       - gnupg
       - rpm
       - cppcheck
+      - autoconf
+      - asciidoc
+      - bc
+      - cpio
+      - bison
+      - flex
+      - gawk
+      - gettext
+      - gzip
+      - hostname
+      - m4
+      - net-tools
+      - openssl
+      - xmlto
+      - zstd
     state: present
