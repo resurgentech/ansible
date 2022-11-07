@@ -1,7 +1,7 @@
 ---
 - name: Debian Install python
   apt:
-    name: [ python-apt, python3-apt, python3-pip ]
+    name: [ python3-apt, python3-pip ]
     state: present
 
 - name: Debian Common development tools

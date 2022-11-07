@@ -25,3 +25,7 @@ ntpserver: pool.ntp.org
 ### set 'jetbrains_full_remote: true' to enable remote root ssh login, makes 
 ### some remote debugging with pycharm, etc easier.
 jetbrains_full_remote: false
+
+minikube_systemd_dir: "{{ '/lib/systemd/system/' if debian_based else 'notsure' }}"
+minikube_binary: /usr/local/bin/minikube
+kubectl_binary: /usr/local/bin/kubectl

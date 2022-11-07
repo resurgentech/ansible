@@ -1,0 +1,14 @@
+[Unit]
+Description=minikube
+
+[Service]
+Type=simple
+User=minikube
+Group=minikube
+RemainAfterExit=yes
+WorkingDirectory=/home/minikube
+ExecStart="{{ minikube_binary }}" start
+ExecStop="{{ minikube_binary }}" stop
+
+[Install]
+WantedBy=multi-user.target
