@@ -18,7 +18,7 @@ This step will install the required 3rd party modules.
 ```bash
 ansible-galaxy install -r requirements.yml --force
 ```
- The --force is optional, it will update your local copies to the latest if older versions present.  FYI - code ends up in ~/.ansible.
+ The --force is optional, it will update your local copies to the latest if older versions present.  FYI - code ends up in \~/.ansible.
 
 ### Run ansible to configure machine ###
 
