@@ -1,0 +1,13 @@
+#!/bin/bash
+BDIR=$(realpath "${PWD}/..")
+BNAME=$(basename "${PWD}")
+
+docker run -i --rm \
+  -e LIBVIRT_DEFAULT_URI \
+  -v /var/run/libvirt/:/var/run/libvirt/ \
+  -v ~/.vagrant.d:/.vagrant.d \
+  -v ${BDIR}:/workdir \
+  --workdir /workdir/${BNAME} \
+  --network host \
+  docker.io/vagrantlibvirt/vagrant-libvirt:latest \
+  vagrant $@

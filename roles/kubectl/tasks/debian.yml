@@ -1,0 +1,31 @@
+---
+- name: Install prereqs for kubectl
+  apt:
+    state: present
+    name:
+      - ca-certificates
+      - curl
+
+- name: Install kubernetes gpg
+  get_url:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    dest: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+
+- name: Adding kubernetes apt
+  copy:
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    content: |
+      deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+  register: kubectl_apt
+
+- name: Update apt repos for kubectl
+  apt:
+    state: present
+    update_cache: yes
+  when: kubectl_apt.changed
+
+- name: Install kubectl
+  apt:
+    state: present
+    name:
+      kubectl

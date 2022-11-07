@@ -15,6 +15,13 @@
     enabled: yes
   tags: acpid
 
+- name: Enable and start firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: firewalld
+
 - name: Configure chrony file
   template:
     src: chrony.conf.j2
@@ -29,10 +36,3 @@
     enabled: yes
   with_items:
     - chronyd
-
-- name: Enable and start cockpit
-  systemd:
-    name: cockpit.socket
-    state: started
-    enabled: yes
-  notify: force enable now cockpit

@@ -1,0 +1,7 @@
+---
+
+- name: Install minikube
+  get_url:
+    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    dest: "{{ minikube_binary }}"
+    mode: 0777

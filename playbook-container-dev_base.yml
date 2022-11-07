@@ -4,8 +4,4 @@
   hosts: all
   remote_user: root
   roles:
-    - admin_users
     - dev_common
-    - gui_common
-    - docker
-    - vm_server

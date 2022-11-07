@@ -1,0 +1,8 @@
+---
+# Site playbook for resurgent technologies, inc. development desktops
+- name: Advanced and problematic optional roles
+  hosts: all
+  roles:
+    - minikube
+    - minikube_service
+    - kubectl

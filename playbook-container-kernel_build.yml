@@ -4,6 +4,5 @@
   hosts: all
   remote_user: root
   roles:
-    - common
-    - golang
-    - docker
+    - dev_common
+    - kernel_build

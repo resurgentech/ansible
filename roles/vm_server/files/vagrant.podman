@@ -1,0 +1,18 @@
+#!/bin/bash
+BDIR=$(realpath "${PWD}/..")
+BNAME=$(basename "${PWD}")
+
+podman run -i --rm \
+  -e LIBVIRT_DEFAULT_URI \
+  -v /var/run/libvirt/:/var/run/libvirt/ \
+  -v ~/.vagrant.d/boxes:/.vagrant.d/boxes \
+  -v ~/.vagrant.d/data:/.vagrant.d/data \
+  -v ~/.vagrant.d/tmp:/.vagrant.d/tmp \
+  -v ${BDIR}:/workdir \
+  --workdir /workdir/${BNAME} \
+  --privileged \
+  --network host \
+  --entrypoint /bin/bash \
+  --security-opt label=disable \
+  docker.io/vagrantlibvirt/vagrant-libvirt:latest \
+  vagrant $@

@@ -1,0 +1,39 @@
+---
+- name: Setup minikube user and add to sudoers group
+  user:
+    name: minikube
+    state: present
+    shell: /bin/bash
+    home: /home/minikube
+    groups: "{{ 'wheel' if redhat_based else 'sudo' }}, libvirt"
+    append: yes
+
+- name: Add admin_users to minikube group
+  user:
+    name: "{{ item }}"
+    groups: minikube
+    append: yes
+  loop: "{{ admin_users }}"
+
+- name: Install minikube service
+  template:
+    src: minikube.service.j2
+    dest: "{{ minikube_systemd_dir }}"
+    mode: '0600'
+  register: minikube
+
+- name: Restart minikube if needed
+  systemd:
+    name: minikube
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  when: minikube.changed
+
+- name: Add minikube group to permissions
+  file:
+    state: directory
+    mode: 0770
+    path: "{{ item }}"
+    recurse: yes
+  loop: ['/home/minikube/.minikube', '/home/minikube/.kube']

@@ -1,7 +1,9 @@
 ---
 
-- name: Install tigervnc
+- name: Debian Install tigervnc
   apt:
     state: present
     name:
-      - tigervnc-server
+      - tigervnc-standalone-server
+      - tigervnc-xorg-extension
+      - tigervnc-viewer
