@@ -7,8 +7,6 @@
       - python3-pip
       - python3-docutils
       - python3-sphinx
-      - python2
-      - python2-pip
       - hostname
       - openssl
       - asciidoc

@@ -11,6 +11,8 @@
       - cmake
       - net-tools
       - rpm-build
+      - python2
+      - python2-pip
       # - dpkg-dev #Not sure where this went
       - zstd
     state: present
