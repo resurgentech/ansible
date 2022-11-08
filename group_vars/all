@@ -3,6 +3,7 @@
 ###  distros are 100% supported in all roles
 redhat_based: "{{ (ansible_distribution in ['CentOS', 'RedHat', 'Fedora', 'Rocky']) }}"
 debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS', 'Debian']) }}"
+debian10_based: "{{ ((ansible_distribution in ['Debian']) and (ansible_distribution_version in ['10'])) }}"
 ubuntu_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
 amazonlinux2_based: "{{ ((ansible_distribution in ['Amazon']) and (ansible_distribution_version in ['2'])) }}"
 ubuntu2004_based: "{{ ((ansible_distribution in ['Ubuntu', 'Pop!_OS']) and (ansible_distribution_version in ['20.04'])) }}"
