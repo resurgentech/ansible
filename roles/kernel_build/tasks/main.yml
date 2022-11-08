@@ -1,8 +1,9 @@
 ---
 # This installs packages required for building kernel distro packages
 
+
 - include: ubuntu.yml
-  when: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
+  when: ubuntu_based|bool
 
 - include: debian10.yml
   when: "{{ ((ansible_distribution in ['Debian']) and (ansible_distribution_version in ['10'])) }}"

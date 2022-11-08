@@ -2,13 +2,13 @@
 # This installs packages required for QT5 development
 
 - include: debian.yml
-  when: "{{ (ansible_distribution in ['Debian']) }}"
+  when: debian_based|bool and not ubuntu_based|bool
 
 - include: ubuntu2004.yml
-  when: "{{ ((ansible_distribution in ['Ubuntu', 'Pop!_OS']) and (ansible_distribution_version in ['20.04'])) }}"
+  when: ubuntu2004_based|bool
 
 - include: ubuntu2204.yml
-  when: "{{ ((ansible_distribution in ['Ubuntu', 'Pop!_OS']) and (ansible_distribution_version in ['22.04'])) }}"
+  when: ubuntu2204_based|bool
 
 - include: redhat.yml
   when: redhat_based|bool
