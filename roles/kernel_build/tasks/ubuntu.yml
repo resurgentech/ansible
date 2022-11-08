@@ -23,4 +23,5 @@
 
 - name: Ubuntu python-config hack
   shell: python3 -m pip install python-config && \
+         rm -f /usr/bin/python-config && \
          ln -s /usr/bin/python3-config /usr/bin/python-config
