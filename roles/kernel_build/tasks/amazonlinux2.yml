@@ -1,5 +1,5 @@
 ---
-- name: AmazonLinux2 Kernel Build Dependancies Dependancies
+- name: AmazonLinux2 Kernel Build Dependencies Dependencies
   yum:
     name:
       - yum-utils
@@ -23,5 +23,5 @@
       - hmaccalc
     state: present
 
-- name: AmazonLinux2 Kernel Build Dependancies
+- name: AmazonLinux2 Kernel Build Dependencies
   shell: yumdownloader --source kernel
