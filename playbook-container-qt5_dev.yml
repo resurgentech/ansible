@@ -1,7 +1,9 @@
 ---
 # Site playbook for resurgent technologies, inc. development desktops
-- name: Basic development tools
+- name: Enable QT5 builds
   hosts: all
   remote_user: root
   roles:
     - dev_common
+    - kernel_build
+    - qt5_dev

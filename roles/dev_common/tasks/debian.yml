@@ -28,6 +28,8 @@
       - m4
       - net-tools
       - openssl
+      - rsync
       - xmlto
+      - rpm
       - zstd
     state: present

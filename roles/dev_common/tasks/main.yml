@@ -1,5 +1,5 @@
 ---
-# This installs common base of packages for desktop / workstation machines
+# This installs development tools
 
 - include: debian.yml
   when: debian_based|bool

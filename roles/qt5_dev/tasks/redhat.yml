@@ -1,0 +1,6 @@
+---
+- name: RedHat QT5 development requirements
+  dnf:
+    name:
+      - qt5-devel
+    state: present

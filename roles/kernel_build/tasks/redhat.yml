@@ -4,7 +4,7 @@
     name: pip
     state: latest
 
-- name: RedHat Common development tools
+- name: RedHat Kernel Build Dependancies
   dnf:
     name:
       - rpmdevtools

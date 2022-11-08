@@ -1,0 +1,27 @@
+---
+- name: AmazonLinux2 Kernel Build Dependancies Dependancies
+  yum:
+    name:
+      - yum-utils
+      - python3
+      - python3-pip
+      - python3-docutils
+      - python3-sphinx
+      - hostname
+      - openssl
+      - asciidoc
+      - openssl-devel
+      - elfutils-devel
+      - binutils-devel
+      - newt-devel
+      - python-devel
+      - "perl(ExtUtils::Embed)"
+      - audit-libs-devel
+      - numactl-devel
+      - pciutils-devel
+      - pesign
+      - hmaccalc
+    state: present
+
+- name: AmazonLinux2 Kernel Build Dependancies
+  shell: yumdownloader --source kernel

@@ -1,0 +1,16 @@
+---
+- name: AmazonLinux2 Common development tools
+  yum:
+    name:
+      - "@Development Tools"
+      - bc
+      - newt
+      - slang
+      - xmlto
+      - rsync
+      - cmake
+      - net-tools
+      - rpm-build
+      - dpkg-dev
+      - zstd
+    state: present

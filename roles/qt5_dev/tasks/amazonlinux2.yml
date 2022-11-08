@@ -1,0 +1,30 @@
+---
+- name: AmazonLinux2 QT5 development requirements 1
+  yum:
+    name:
+      - wget
+      - openssl-devel
+    state: present
+
+- name: AmazonLinux2 QT5 development requirements 2
+  yum:
+    name:
+      - cmake
+    state: absent
+
+- name: AmazonLinux2 QT5 development requirements 3
+  yum:
+    name:
+      - qt5-qtbase-devel
+    state: present
+
+- name: AmazonLinux2 QT5 development requirements 4
+  shell:  cd /tmp; \
+          wget https://github.com/Kitware/CMake/releases/download/v3.23.2/cmake-3.23.2-linux-x86_64.tar.gz; \
+          tar xf cmake-3.23.2-linux-x86_64.tar.gz; \
+          cp -r /tmp/cmake-3.23.2-linux-x86_64/bin/* /usr/bin/; \
+          cp -r /tmp/cmake-3.23.2-linux-x86_64/share/* /usr/share/; \
+          cp -r /tmp/cmake-3.23.2-linux-x86_64/man/* /usr/share/man/; \
+          cp -r /tmp/cmake-3.23.2-linux-x86_64/doc/* /usr/share/doc/; \
+          rm -f cmake-3.23.2-linux-x86_64.tar.gz; \
+          rm -rf cmake-3.23.2-linux-x86_64;
