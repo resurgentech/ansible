@@ -1,5 +1,5 @@
 ---
-- name: Debian Kernel Build Dependancies Dependancies Long form
+- name: Debian Kernel Build Dependencies Dependencies Long form
   apt:
     name:
       - libncurses-dev
@@ -25,7 +25,7 @@
       - texlive-latex-extra
     state: present
 
-- name: Debian Kernel Build Dependancies from Long form
+- name: Debian Kernel Build Dependencies from Long form
   apt:
     name: linux
     state: build-dep

@@ -7,6 +7,9 @@
 - include: redhat.yml
   when: redhat_based|bool
 
+- include: amazonlinux2.yml
+  when: amazonlinux2_based|bool
+
 # This is required for the our build scripts
 - name: Various python dependancies
   pip:

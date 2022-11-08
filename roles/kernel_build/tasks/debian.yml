@@ -1,5 +1,5 @@
 ---
-- name: Debian Kernel Build Dependancies Dependancies
+- name: Debian Kernel Build Dependencies Dependencies
   apt:
     name:
       - libncurses-dev
@@ -13,7 +13,7 @@
       - dkms
     state: present
 
-- name: Debian Kernel Build Dependancies
+- name: Debian Kernel Build Dependencies
   apt:
     name: linux
     state: build-dep
