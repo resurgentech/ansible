@@ -1,6 +1,6 @@
 ---
 - name: AmazonLinux2 Common development tools
-  yum:
+  dnf:
     name:
       - "@Development Tools"
       - bc
