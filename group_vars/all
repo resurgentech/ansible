@@ -3,7 +3,7 @@
 ###  distros are 100% supported in all roles
 redhat_based: "{{ (ansible_distribution in ['CentOS', 'RedHat', 'Fedora', 'Rocky']) }}"
 debian_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS', 'Debian']) }}"
-amazonlinux2_based: "{{ ((ansible_distribution in ['Amazon']) && (ansible_distribution_version in ['2'])) }}"
+amazonlinux2_based: "{{ ((ansible_distribution in ['Amazon']) and (ansible_distribution_version in ['2'])) }}"
 
 
 ## admin users
