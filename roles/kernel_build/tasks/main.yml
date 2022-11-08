@@ -5,7 +5,7 @@
   when: ubuntu_based|bool
 
 - include: debian10.yml
-  when: ubuntu10_based|bool
+  when: debian10_based|bool
 
 - include: debian.yml
   when: debian_based|bool and not ubuntu_based|bool
