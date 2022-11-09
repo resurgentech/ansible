@@ -1,5 +1,5 @@
 ---
-# Site playbook for resurgent technologies, inc. development desktops
+# Site playbook for resurgent technologies, inc. QT5 build images
 - name: Enable QT5 builds
   hosts: all
   remote_user: root
