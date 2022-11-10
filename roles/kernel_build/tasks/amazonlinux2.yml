@@ -1,4 +1,7 @@
 ---
+- name: AmazonLinux2 installing epel
+  shell: yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
 - name: AmazonLinux2 Kernel Build Dependencies Dependencies
   yum:
     name:
@@ -21,6 +24,10 @@
       - pciutils-devel
       - pesign
       - hmaccalc
+      - ncurses-devel
+      - cpan
+      - dpkg
+      - dpkg-dev
     state: present
 
 - name: AmazonLinux2 Kernel Build Dependencies
