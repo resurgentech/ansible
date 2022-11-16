@@ -15,6 +15,8 @@
       - xmlto
       - net-tools
       - rpm-build
+      - dpkg-devel
+      - dpkg
       - dpkg-dev
       - zstd
       - python3

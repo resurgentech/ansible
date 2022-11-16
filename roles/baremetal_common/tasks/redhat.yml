@@ -1,9 +1,16 @@
 ---
+- name: Install dnf-plugins-core
+  shell: dnf install dnf-plugins-core
+  changed_when: false
 
 - name: Install epel-release as it's own step to avoid issues.
   dnf:
     state: present
     name: epel-release
+
+- name: Install powertools
+  shell: dnf config-manager --set-enabled powertools
+  changed_when: false
 
 - name: Install common dependencies, beyond epel...
   dnf:
@@ -16,7 +23,21 @@
       - cockpit
       - cockpit-pcp
       - cockpit-machines
+
+- name: check if docker is installed
+  shell: sudo dnf list --installed docker-ce
+  changed_when: false
+  ignore_errors: true
+  register: docker_check
+
+#- debug:
+#    var: docker_check
+
+- name: install podman
+  dnf:
+    name:
       - podman
+  when: docker_check.rc|bool
 
 - name: Enable and start cockpit
   systemd:
