@@ -2,17 +2,28 @@
 BDIR=$(realpath "${PWD}/..")
 BNAME=$(basename "${PWD}")
 
-podman run -i --rm \
+ARGS=""
+for var in "$@"; do
+  if [[ "$var" =~ \ |\' ]]; then
+    ARGS="${ARGS} \"${var}\""
+  else
+    ARGS="${ARGS} ${var}"
+  fi
+done
+
+CMD="podman run -i --rm \
   -e LIBVIRT_DEFAULT_URI \
   -v /var/run/libvirt/:/var/run/libvirt/ \
   -v ~/.vagrant.d/boxes:/.vagrant.d/boxes \
   -v ~/.vagrant.d/data:/.vagrant.d/data \
   -v ~/.vagrant.d/tmp:/.vagrant.d/tmp \
-  -v ${BDIR}:/workdir \
-  --workdir /workdir/${BNAME} \
-  --privileged \
+  -v ${BDIR}:${BDIR} \
+  --workdir ${BDIR}/${BNAME} \
   --network host \
+  --privileged \
   --entrypoint /bin/bash \
   --security-opt label=disable \
   docker.io/vagrantlibvirt/vagrant-libvirt:latest \
-  vagrant $@
+  vagrant $ARGS"
+
+eval $CMD
