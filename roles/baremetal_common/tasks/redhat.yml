@@ -1,6 +1,6 @@
 ---
 - name: Install dnf-plugins-core
-  shell: dnf install dnf-plugins-core
+  shell: dnf install -y dnf-plugins-core
   changed_when: false
 
 - name: Install epel-release as it's own step to avoid issues.
