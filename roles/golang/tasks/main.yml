@@ -4,5 +4,5 @@
   include_role:
     name: gantsign.golang
 
-- include: godoc.yml
+- include_tasks: godoc.yml
   loop: "{{ admin_users }}"

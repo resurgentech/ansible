@@ -1,7 +1,7 @@
 # Installs docker
 
-- include: debian.yml
+- include_tasks: debian.yml
   when: debian_based|bool
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: redhat_based|bool
