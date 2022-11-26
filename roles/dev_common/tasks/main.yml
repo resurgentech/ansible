@@ -1,12 +1,12 @@
 ---
 # This installs development tools
-- include: debian.yml
+- include_tasks: debian.yml
   when: debian_based|bool
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: redhat_based|bool
 
-- include: amazonlinux2.yml
+- include_tasks: amazonlinux2.yml
   when: amazonlinux2_based|bool
 
 - name: Various python dependancies
