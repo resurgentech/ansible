@@ -4,7 +4,7 @@
     name: pip
     state: latest
 
-- name: RedHat Common development tools
+- name: RedHat Kernel Build Dependencies
   dnf:
     name:
       - rpmdevtools
@@ -21,6 +21,7 @@
       - numactl-devel
       - openssl-devel
       - pciutils-devel
+      - libnl3-devel
       - xz-devel
       - zlib-devel
       - perl-interpreter

@@ -1,12 +1,12 @@
 ---
 
-- include: debian.yml
+- include_tasks: debian.yml
   when: debian_based|bool
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: redhat_based|bool
 
-- include: vagrant_per_user.yml
+- include_tasks: vagrant_per_user.yml
   loop: "{{ admin_users }}"
 
 - name: Install vagrant_tools

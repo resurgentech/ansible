@@ -2,10 +2,10 @@
 # This installs common base of packages for baremetal servers, 
 #  these would be production vm servers etc.
 
-- include: debian.yml
+- include_tasks: debian.yml
   when: debian_based|bool
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: redhat_based|bool
 
 - name: Enable and start acpid for clean shutdowns over ipmi

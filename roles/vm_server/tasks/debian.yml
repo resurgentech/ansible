@@ -11,3 +11,4 @@
     src: vagrant.docker
     dest: /usr/bin/vagrant
     mode: '0777'
+    state: present

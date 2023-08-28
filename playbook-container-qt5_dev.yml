@@ -1,0 +1,9 @@
+---
+# Site playbook for resurgent technologies, inc. QT5 build images
+- name: Enable QT5 builds
+  hosts: all
+  remote_user: root
+  roles:
+    - dev_common
+    - kernel_build
+    - qt5_dev

@@ -1,0 +1,10 @@
+---
+- name: Ubuntu2204 QT5 build Dependancies
+  apt:
+    name:
+      - qtbase5-dev
+      - qtchooser
+      - qt5-qmake
+      - qtbase5-dev-tools
+      - cmake
+    state: present

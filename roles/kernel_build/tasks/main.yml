@@ -1,12 +1,22 @@
 ---
-# This installs common base of packages for desktop / workstation machines
+# This installs packages required for building kernel distro packages
 
-- include: debian.yml
-  when: debian_based|bool
+- include_tasks: ubuntu.yml
+  when: ubuntu_based|bool
 
-- include: redhat.yml
+- include_tasks: debian10.yml
+  when: debian10_based|bool
+
+- include_tasks: debian.yml
+  when: debian_based|bool and not ubuntu_based|bool
+
+- include_tasks: redhat.yml
   when: redhat_based|bool
 
+- include_tasks: amazonlinux2.yml
+  when: amazonlinux2_based|bool
+
+# This is required for the our build scripts
 - name: Various python dependancies
   pip:
     name:

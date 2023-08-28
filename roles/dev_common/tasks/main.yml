@@ -1,11 +1,13 @@
 ---
-# This installs common base of packages for desktop / workstation machines
-
-- include: debian.yml
+# This installs development tools
+- include_tasks: debian.yml
   when: debian_based|bool
 
-- include: redhat.yml
+- include_tasks: redhat.yml
   when: redhat_based|bool
+
+- include_tasks: amazonlinux2.yml
+  when: amazonlinux2_based|bool
 
 - name: Various python dependancies
   pip:
