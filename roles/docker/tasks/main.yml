@@ -1,29 +1,7 @@
 # Installs docker
 
-- name: Override ansible_distribution for Pop!_OS compatibility
-  set_fact: ansible_distribution='Ubuntu'
-  when: ansible_distribution == 'Pop!_OS'
+- include_tasks: debian.yml
+  when: debian_based|bool
 
-- name: Override ansible_os_family for Pop!_OS compatibility
-  set_fact: ansible_os_family='Debian'
-  when: ansible_os_family == 'Pop!_OS'
-
-- debug:
-    msg: "ansible_distribution={{ ansible_distribution }}"
-
-- name: docker install
-  include_role:
-    name: geerlingguy.docker
-
-- name: Allow insecure repo
-  template:
-    src: dockerdaemonjson.j2
-    dest: /etc/docker/daemon.json
-  register: insecure
-  when: insecure_registry_entry is defined
-
-- name: Restart Docker if needed
-  systemd:
-    name: docker
-    state: restarted
-  when: insecure.changed
+- include_tasks: redhat.yml
+  when: redhat_based|bool

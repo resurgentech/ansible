@@ -1,5 +1,5 @@
 ---
-# Site playbook for resurgent technologies, inc. development desktops
+# Site playbook for resurgent technologies, inc. development images
 - name: Basic development tools
   hosts: all
   remote_user: root

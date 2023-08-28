@@ -1,0 +1,7 @@
+---
+- name: Debian QT5 build Dependancies
+  apt:
+    name:
+      - qt5-default
+      - cmake
+    state: present

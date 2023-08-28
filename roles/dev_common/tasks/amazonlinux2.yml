@@ -17,4 +17,5 @@
       - python3-pip
       # - dpkg-dev #Not sure where this went
       - zstd
+      - wget
     state: present

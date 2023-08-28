@@ -1,4 +1,10 @@
 ---
+- name: AmazonLinux2 installing epel
+  yum:
+    name:
+      - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: present
+
 - name: AmazonLinux2 Kernel Build Dependencies Dependencies
   yum:
     name:
@@ -21,7 +27,14 @@
       - pciutils-devel
       - pesign
       - hmaccalc
+      - ncurses-devel
+      - cpan
+      - dpkg
+      - dpkg-dev
     state: present
 
 - name: AmazonLinux2 Kernel Build Dependencies
   shell: yumdownloader --source kernel
+
+- name: AmazonLinux2 python3 dependencies
+  shell: python3 -m pip install pyaml; python3 -m pip install jinja2
