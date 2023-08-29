@@ -9,3 +9,4 @@
     - gui_common
     - docker
     - vm_server
+    - nvm_node
