@@ -2,5 +2,5 @@
 roles:
   - name: gantsign.golang
   - name: geerlingguy.docker
-  - name: grzegorznowak.nvm_node
+  - name: stephdewit.nvm
   - name: jaredhocutt.jetbrains_toolbox
