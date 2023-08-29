@@ -34,3 +34,11 @@ jetbrains_full_remote: false
 minikube_systemd_dir: "{{ '/lib/systemd/system/' if debian_based else 'notsure' }}"
 minikube_binary: /usr/local/bin/minikube
 kubectl_binary: /usr/local/bin/kubectl
+
+## nvm/node/npm
+nvm_version: 0.39.5
+nvm_node_version: lts
+nvm_install_path: /var/lib/nvm
+nvm_shell_init_file: /etc/bash.bashrc
+
+insecure_registry_entry: "localhost"
