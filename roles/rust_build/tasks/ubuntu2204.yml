@@ -23,7 +23,7 @@
 
 # Environment modified in case rust doesn't exist
 - name: Install cargo-deb
-  command: source ~/.cargo/env && cargo install cargo-deb
+  command: . ~/.cargo/env && cargo install cargo-deb
 
 - name: Install cargo-generate-rpm
-  command: source ~/.cargo/env && cargo install cargo-generate-rpm
+  command: . ~/.cargo/env && cargo install cargo-generate-rpm
