@@ -5,7 +5,11 @@
       - libstdc++-12-dev
     state: present
 
-- name: Install rust
-  shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
-  args:
-    warn: false
+- name: Download rustup script
+  get_url:
+    url: https://sh.rustup.rs
+    dest: /tmp/rustup.sh
+    mode: 0755
+
+- name: Run rustup script
+  command: /tmp/rustup.sh -y
