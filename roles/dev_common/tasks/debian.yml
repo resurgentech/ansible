@@ -32,4 +32,5 @@
       - xmlto
       - rpm
       - zstd
+      - libstdc++-12-dev
     state: present
