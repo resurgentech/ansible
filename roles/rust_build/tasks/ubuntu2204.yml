@@ -13,3 +13,9 @@
 
 - name: Run rustup script
   command: /tmp/rustup.sh -y
+
+- name: Install cargo-deb
+  command: cargo install cargo-deb
+
+- name: Install cargo-generate-rpm
+  command: cargo install cargo-generate-rpm
