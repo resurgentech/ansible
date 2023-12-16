@@ -2,7 +2,7 @@
 - name: Ubuntu2204 tensorflow build Dependancies
   apt:
     name:
-      - libstc++-12-dev
+      - libstdc++-12-dev
     state: present
 
 - name: Install rust
