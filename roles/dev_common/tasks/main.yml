@@ -15,6 +15,3 @@
       - jinja2
       - GitPython
       - pyaml
-
-- name: Install rust
-  shell: curl https://sh.rustup.rs -sSf | sh -s -- -y

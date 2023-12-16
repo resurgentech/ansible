@@ -1,0 +1,5 @@
+---
+# This installs packages required for rust development
+
+- include_tasks: ubuntu2204.yml
+  when: ubuntu2204_based|bool

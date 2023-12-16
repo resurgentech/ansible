@@ -1,0 +1,9 @@
+---
+- name: Ubuntu2204 tensorflow build Dependancies
+  apt:
+    name:
+      - libstc++-12-dev
+    state: present
+
+- name: Install rust
+  shell: curl https://sh.rustup.rs -sSf | sh -s -- -y
