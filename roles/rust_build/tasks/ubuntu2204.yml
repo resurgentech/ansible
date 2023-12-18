@@ -5,6 +5,7 @@
       - libstdc++-12-dev
       - libssl-dev
       - pkg-config
+      - clang
     state: present
 
 - name: Check if cargo is installed
