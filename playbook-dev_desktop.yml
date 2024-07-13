@@ -6,7 +6,8 @@
   roles:
     - admin_users
     - dev_common
-    - gui_common
+    #- gui_common
     - docker
     - vm_server
     - nvm_node
+    - golang

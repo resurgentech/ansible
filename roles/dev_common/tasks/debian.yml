@@ -33,3 +33,10 @@
       - rpm
       - zstd
     state: present
+
+- name: Ubuntu2404 python deps
+  apt:
+    name:
+      - python3-jinja2
+      - python3-git
+      - python3-yaml

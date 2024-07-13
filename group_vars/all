@@ -8,6 +8,7 @@ ubuntu_based: "{{ (ansible_distribution in ['Ubuntu', 'Pop!_OS']) }}"
 amazonlinux2_based: "{{ ((ansible_distribution in ['Amazon']) and (ansible_distribution_version in ['2'])) }}"
 ubuntu2004_based: "{{ ((ansible_distribution in ['Ubuntu', 'Pop!_OS']) and (ansible_distribution_version in ['20.04'])) }}"
 ubuntu2204_based: "{{ ((ansible_distribution in ['Ubuntu', 'Pop!_OS']) and (ansible_distribution_version in ['22.04'])) }}"
+ubuntu2404_based: "{{ ((ansible_distribution in ['Ubuntu', 'Pop!_OS']) and (ansible_distribution_version in ['24.04'])) }}"
 
 ## admin users
 admin_users: ["{{ ansible_user }}"]
@@ -36,9 +37,12 @@ minikube_binary: /usr/local/bin/minikube
 kubectl_binary: /usr/local/bin/kubectl
 
 ## nvm/node/npm
-nvm_version: 0.39.5
+nvm_version: 0.39.7
 nvm_node_version: lts
 nvm_install_path: /var/lib/nvm
 nvm_shell_init_file: /etc/bash.bashrc
 
 insecure_registry_entry: "localhost"
+
+## Go language SDK version number
+golang_version: '1.22.5'
