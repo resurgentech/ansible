@@ -1,0 +1,19 @@
+---
+
+- name: "add CUDA_HOME for {{ item }}"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ item }}/.bashrc"
+    search_string: 'CUDA_HOME'
+    line: "export CUDA_HOME={{ cuda_install_path }}"
+
+- name: "add path for {{ item }}"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ item }}/.bashrc"
+    search_string: 'export PATH=/usr/local/cuda'
+    line: "export PATH={{ cuda_install_path }}/bin:$PATH"
+
+- name: "add library path {{ item }}"
+  ansible.builtin.lineinfile:
+    path: "/home/{{ item }}/.bashrc"
+    search_string: 'export LD_LIBRARY_PATH=/usr/local/cuda'
+    line: "export LD_LIBRARY_PATH=/usr/local/{{ cuda_install_path }}/lib64:$LD_LIBRARY_PATH"

@@ -1,0 +1,19 @@
+---
+
+- include_tasks: install_keyring.yml
+  tags: cuda
+
+- name: Install the relevant cuda version, will also install the driver.
+  become: true
+  apt:
+    update_cache: true
+    state: present
+    name: "{{ cuda_deb_files }}"
+  notify: restart host
+
+- include_tasks: install_nvidia_container_toolkit.yml
+  tags: cuda
+
+- include_tasks: per_user.yml
+  loop: "{{ admin_users }}"
+  tags: cuda

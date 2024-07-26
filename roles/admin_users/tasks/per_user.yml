@@ -1,0 +1,38 @@
+---
+
+- name: Setup user '{{ item }}' and add to sudoers group
+  user:
+    name: "{{ item }}"
+    state: present
+    shell: /bin/bash
+    groups: "{{ 'wheel' if redhat_based else 'sudo' }}"
+    append: yes
+  register: add_users
+
+- name: Set default password for '{{ item }}' (when user is new)
+  user:
+    name: "{{ item }}"
+    state: present
+    shell: /bin/bash
+    groups: "{{ 'wheel' if redhat_based else 'sudo' }}"
+    append: yes
+    password: "{{ default_password }}"
+  when: add_users.changed
+
+- name: Ensure SSH path for user '{{ item }}' exists
+  file:
+    state: directory
+    mode: 0700
+    path:  "/home/{{ item }}/.ssh"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+
+- name: Fixing sudo access for user '{{ item }}'
+  template:
+    dest: "/etc/sudoers.d/{{ item }}"
+    src: "sudoers_template.j2"
+    mode: 0440
+    owner: root
+    group: root
+    validate: 'visudo -cf %s'
+

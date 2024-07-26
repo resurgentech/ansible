@@ -1,0 +1,19 @@
+
+cuda_keyring_version: "1.1-1"
+cuda_keyring_repo: >-
+  {% if ubuntu2404_based %}
+  https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+  {% elif ubuntu2204_based %}
+  https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+  {% endif %}
+
+cuda_deb_files:
+  - nvidia-driver-555-open
+  - cuda-drivers-555
+  - cuda-toolkit-12-5
+  - nvidia-gds-12.5
+  - cuda-tools-12-5
+  - cuda-libraries-dev-12-5
+  - nvtop
+
+cuda_install_path: /usr/local/cuda-12.5

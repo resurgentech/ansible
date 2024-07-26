@@ -1,5 +1,13 @@
 ---
 
+- name: Ensure SSH path for root
+  file:
+    state: directory
+    mode: 0700
+    path:  "/root/.ssh"
+    owner: "root"
+    group: "root"
+
 - name: Set includedir in sudoers
   lineinfile:
     dest: /etc/sudoers
@@ -16,5 +24,9 @@
     state: present
     validate: "/usr/sbin/visudo -cf %s"
 
-- include_tasks: per_user.yml
-  loop: "{{ admin_users }}"
+- name: enable root ssh access
+  vars:
+    sshd_PermitRootLogin: 'yes'
+    sshd_PasswordAuthentication: 'yes'
+  include_role:
+    name: ypsman.sshd_config
