@@ -14,6 +14,7 @@
 - include_tasks: install_nvidia_container_toolkit.yml
   tags: cuda
 
-- include_tasks: per_user.yml
-  loop: "{{ admin_users }}"
-  tags: cuda
+- name: Adding cuda tools to PATH
+  template:
+    src: profile.j2
+    dest: /etc/profile.d/cuda.sh

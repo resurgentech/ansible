@@ -1,5 +1,12 @@
 ---
-# This installs packages required for rust development
 
+# This installs packages required for rust development
 - include_tasks: ubuntu2204.yml
-  when: ubuntu2204_based|bool
+  when: ubuntu2404_based|bool or ubuntu2204_based|bool
+
+# Installing rust is actually a per user task
+- include_tasks: per_user.yml
+  loop: "{{ admin_users }}"
+
+- include_tasks: per_user.yml
+  loop: [root]

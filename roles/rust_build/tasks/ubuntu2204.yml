@@ -1,5 +1,5 @@
 ---
-- name: Ubuntu2204 tensorflow build Dependancies
+- name: Ubuntu2204 rust build Dependancies
   apt:
     name:
       - libstdc++-12-dev
@@ -7,26 +7,3 @@
       - pkg-config
       - clang
     state: present
-
-- name: Check if cargo is installed
-  command: which cargo
-  register: cargo_check
-  ignore_errors: yes
-
-- name: Download rustup script
-  get_url:
-    url: https://sh.rustup.rs
-    dest: /tmp/rustup.sh
-    mode: 0755
-  when: cargo_check.rc != 0
-
-- name: Run rustup script
-  command: /tmp/rustup.sh -y
-  when: cargo_check.rc != 0
-
-# Environment modified in case rust doesn't exist
-- name: Install cargo-deb
-  shell: . ~/.cargo/env && cargo install cargo-deb
-
-- name: Install cargo-generate-rpm
-  shell: . ~/.cargo/env && cargo install cargo-generate-rpm

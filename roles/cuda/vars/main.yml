@@ -11,7 +11,7 @@ cuda_deb_files:
   - nvidia-driver-555-open
   - cuda-drivers-555
   - cuda-toolkit-12-5
-  - nvidia-gds-12.5
+  - nvidia-gds
   - cuda-tools-12-5
   - cuda-libraries-dev-12-5
   - nvtop

@@ -4,5 +4,6 @@
   hosts: all
   remote_user: root
   roles:
-    - jetbrains
-    - golang
+    #- jetbrains
+    #- golang
+    - docker
