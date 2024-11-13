@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ############################################################################################
-#   helper functions for ./run scripts
+#   helper functions for ./run scripts for ansible
 ############################################################################################
 
 # find largest command/flag/target name length
