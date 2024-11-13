@@ -1,0 +1,98 @@
+---
+
+- name: Check SHA1 of local Concourse CI binary package
+  shell:
+    cmd: "sha1sum --check {{ concourse_ci_binary_pkg_checksum }}"
+    chdir: "{{ role_path }}/files/"
+  changed_when: false
+  register: localfile_checksum
+
+- name: Download Concourse CI binary package locally
+  local_action:
+    module: get_url
+    url: "{{ concourse_ci_binary_url }}"
+    dest: "{{ role_path }}/files/{{ concourse_ci_binary_pkg }}"
+    checksum: "sha1:{{ concourse_ci_binary_pkg_checksum.split()[0] }}"
+  when: localfile_checksum.rc != 0
+
+# - name: debug concourse_binary_sha1
+#   debug:
+#     var: concourse_binary_sha1
+
+- name: Check Concourse CI version
+  command: /opt/concourse/bin/concourse --version
+  register: concourse_version_check
+  changed_when: false
+  ignore_errors: true
+
+# - name: Set Concourse CI version
+#   debug:
+#     var: concourse_version_check
+
+- name: Compare Concourse CI version
+  set_fact:
+    version_match: "{{ concourse_ci_version in concourse_version_check.stdout }}"
+
+- name: Copy Concourse CI binary package to target
+  copy:
+    src: "{{ role_path }}/files/{{ concourse_ci_binary_pkg }}"
+    dest: "/tmp/{{ concourse_ci_binary_pkg }}"
+  when: not version_match
+
+- name: Untar Concourse CI binary package to /opt
+  unarchive:
+    src: "/tmp/{{ concourse_ci_binary_pkg }}"
+    dest: /opt
+    remote_src: yes
+  when: not version_match
+
+- name: Remove temporary Concourse CI binary package
+  file:
+    path: "/tmp/{{ concourse_ci_binary_pkg }}"
+    state: absent
+  when: not version_match
+
+- name: Adding Concourse CI to PATH
+  template:
+    src: profile.j2
+    dest: /etc/profile.d/concourse_ci.sh
+  when: not version_match
+
+- name: Create directory for Concourse CI worker
+  file:
+    path: /home/concourse/worker
+    state: directory
+    recurse: yes
+
+- name: Use OpenBao to get keys locally
+  shell: |
+    mkdir -p {{ role_path }}/files/keys
+    bao read -field worker_key infra/concourse_ci > {{ role_path }}/files/keys/worker_key
+    bao read -field tsa_host_key.pub infra/concourse_ci > {{ role_path }}/files/keys/tsa_host_key.pub
+  delegate_to: localhost
+  become_user: "{{ ansible_user }}"
+  changed_when: false
+  args:
+    executable: /bin/bash
+
+- name: Copy Concourse CI keys to target
+  copy:
+    src: "{{ role_path }}/files/keys"
+    dest: "/opt/concourse/"
+
+# Set up custom tags and envvars for the Concourse CI worker in this file
+- name: Make sure the Concourse CI service envvars file is present
+  file:
+    path: /opt/concourse/envvars
+    state: touch
+    mode: 0666
+  changed_when: false
+
+- name: Create systemd service for Concourse CI worker
+  template:
+    src: concourse_ci_worker.service.j2
+    dest: /etc/systemd/system/concourse_ci_worker.service
+    mode: 0644
+  notify:
+    - Reload systemd
+    - Restart concourse_ci_worker

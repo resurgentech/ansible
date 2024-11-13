@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Find the directory of the script and change to it
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# Project root, adjust as needed
+PROJECT_DIR="$( cd $SCRIPT_DIR &> /dev/null && pwd )"
+cd "$SCRIPT_DIR"
+# Strip the script path to be relative to project root
+SCRIPT_PATH="${0#$PROJECT_DIR}"; [[ ! "$SCRIPT_PATH" =~ ^\..*$ ]] && SCRIPT_PATH=".$SCRIPT_PATH"
+# Include the run_helpers.sh for 'library' functions
+source $PROJECT_DIR/tools/scripts/ansible_helpers.sh || exit 1
+
+############################################################################################
+SHORT_DESC="bitflux collector - client for getting training data"
+############################################################################################
+
+VALID_COMMANDS=("setup:Installs ansible tool to the local machine:0"
+                "user:Configure user in targets:1"
+                "targets:Run ansible on targets:2")
+VALID_SUBCOMMANDS=("user:password:Setup password"
+                   "user:keys:Setup ssh keys for passwordless access"
+                   "user:vnc:Setup vnc instance")
+VALID_FLAGS=("--help:Show help for this script"
+             "--debug:Enable debug mode"
+             "--dryrun:Dryrun.  Don't actually run the commands"
+             "--nosshpassword:Don't ask for ssh password, use keys instead"
+             "--ask-become-pass:Ask for sudo password"
+             "--check:Contact the hosts but don't change anything"
+             "--localhost:Run on localhost")
+VALID_OPTIONS=("--verbose=<level>:Verbose output"
+               "--user=<username>:User for ssh connection"
+               "--hostname=<hostname>:Only run on HOSTNAME rather than all qualified hosts")
+FLAGS_EXPANSIONS=()
+COMMAND_EXPANSIONS=()
+
+
+
+FLAGS=()
+OPTIONS=()
+COMMANDS=()
+# Parse command line arguments
+cli_parser $@
+
+
+echo "  ##################################################################"
+echo "  # Running '$SCRIPT_PATH' script"
+echo "  #   Commands: ${COMMANDS[@]}"
+echo "  #   Flags: ${FLAGS[@]}"
+echo "  #   Options: ${OPTIONS[@]}"
+echo "  #-----------------------------------------------------------------"
+
+# Execute the command
+for COMMAND in "${COMMANDS[@]}"; do
+  case "$COMMAND" in
+    setup)
+        echo "Installing ansible and dependencies to local machine, only supports Ubuntu."
+        echo ""
+        cd ${PROJECT_ROOT}/
+
+        # installing prereqs
+        run_command "sudo apt update"
+        run_command "sudo apt-get install -y software-properties-common"
+        # required for ansible over ssh connections
+        run_command "sudo apt install -y sshpass"
+        # actually install ansible
+        run_command "sudo python3 -m pip install ansible"
+        # install ansible galaxy packages (same as ./run galaxy)
+        run_command "ansible-galaxy install -r requirements.yml --force"
+        ;;
+    password)
+        echo "Setting user password on targets"
+        echo ""
+        echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+        cd ${PROJECT_ROOT}/tools
+
+        run_command "ansible-playbook  -i ../${INVENTORYFILE}  playbook-setup_user_password.yml  ${SSH_PASSWORD}  ${VERBOSE}  ${ANSIBLE_USER}  ${ASK_SUDO_PASSWORD}  ${LIMIT_HOST}  ${CHECK}"
+        ;;
+    keys)
+        echo "Pushing local SSH keys to targets"
+        echo ""
+        echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+        cd ${PROJECT_ROOT}/tools
+
+        run_command "ansible-playbook  -i ../${INVENTORYFILE}  playbook-setup_user_keys.yml  ${SSH_PASSWORD}  ${VERBOSE}  ${ANSIBLE_USER}  ${ASK_SUDO_PASSWORD}  ${LIMIT_HOST}  ${CHECK}"
+        ;;
+    vnc)
+        echo "Configuring vnc for user ${ANSIBLE_USER}"
+        echo ""
+        echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+        cd ${PROJECT_ROOT}/tools
+
+        run_command "ansible-playbook  -i ../${INVENTORYFILE}  playbook-setup_vnc.yml  ${SSH_PASSWORD}  ${VERBOSE}  ${ANSIBLE_USER}  ${ASK_SUDO_PASSWORD}  ${LIMIT_HOST}  ${CHECK}"
+        ;;
+    *)
+      show_usage
+      exit 1
+      ;;
+  esac
+done
+
+echo "  #-----------------------------------------------------------------"
+echo "  # '$SCRIPT_PATH' script DONE"
+echo "  ##################################################################"

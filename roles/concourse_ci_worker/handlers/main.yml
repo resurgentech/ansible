@@ -1,0 +1,10 @@
+---
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+
+- name: Restart concourse_ci_worker
+  shell: |
+    systemctl enable concourse-worker
+    systemctl restart concourse_ci_worker
+

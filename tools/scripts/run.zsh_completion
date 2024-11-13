@@ -1,0 +1,244 @@
+#compdef run
+
+builder_helper() {
+    local cmd
+    cmd="$words[1]"
+
+    # check if this is a magic run script has targets and commands
+    local has_targets_and_commands=$("$cmd" has_targets 2>/dev/null)
+
+    # Determine current target and command based on the number of words
+    local target=""
+    local command=""
+    if [ -n "$has_targets_and_commands" ]; then
+        if (( CURRENT > 1 )); then
+            target="$words[2]"
+        fi
+        if (( CURRENT > 2 )); then
+            command="$words[3]"
+        fi
+
+        _arguments \
+            '--help[Show help message]' \
+            '1:target:->target' \
+            '2:command:->command' \
+            '*::options:->options'
+    else
+        if (( CURRENT > 1 )); then
+            command="$words[2]"
+        fi
+
+        _arguments \
+            '--help[Show help message]' \
+            '1:command:->command' \
+            '*::options:->options'
+    fi
+
+
+    case $state in
+        target)
+            # Completion for the first argument (target)
+            local targets
+            targets=()
+            while IFS= read -r line; do
+                targets+=("$line")
+            done <<< "$("$cmd" list_valid_targets 2>/dev/null)"
+            _describe 'Targets' targets
+            ;;
+        command)
+            # Completion for the second argument (command) based on the target
+            local commands
+            commands=()
+            while IFS= read -r line; do
+                commands+=("$line")
+            done <<< "$("$cmd" list_valid_commands "$target" 2>/dev/null)"
+            _describe 'Commands' commands
+            ;;
+        options)
+            # Completion for flags
+            local prev="$words[$CURRENT-1]"
+            local flags
+            flags=()
+            while IFS= read -r line; do
+                flags+=("$line")
+            done <<< "$("$cmd" list_valid_flags "$command" "$target" 2>/dev/null)"
+            while IFS= read -r line; do
+                if [ -z "$line" ]; then
+                    continue
+                fi
+                IFS=':' read -r option validcommand desc <<< "$line"
+                IFS='=' read -r option_name arg_type <<< "$option"
+                if [[ "$option_name" == "$prev" ]]; then
+                    arg_type="${arg_type#*<}"       # Extracts "path>:description"
+                    arg_type="${arg_type%%>*}"      # Extracts "path"
+                    case "$arg_type" in
+                        path)
+                            _files
+                            ;;
+                        version)
+                            _values "version" "0.1.0" "0.2.0" "1.0.0"
+                            ;;
+                        number)
+                            _numbers
+                            ;;
+                        url)
+                            _urls
+                            ;;
+                        *)
+                            # Default to generic word completion
+                            _generic
+                            ;;
+                    esac
+                    flags=()
+                    break
+                else
+                    flags+=("$option_name:$desc")
+                fi
+            done <<< "$("$cmd" list_valid_options "$command" "$target" 2>/dev/null)"
+            if [ -n "$flags" ]; then
+                _describe 'Flags' flags
+            fi
+            ;;
+    esac
+}
+
+ansible_helper() {
+    local cmd
+    cmd="$words[1]"
+
+    local command=""
+    local subcommand=""
+    local subcommand2=""
+    if [ "$number_subcommands" == "2" ]; then
+        if (( CURRENT > 1 )); then
+            command="$words[2]"
+        fi
+        if (( CURRENT > 2 )); then
+            subcommand="$words[3]"
+        fi
+        if (( CURRENT > 3 )); then
+            subcommand2="$words[4]"
+        fi
+
+        _arguments \
+            '--help[Show help message]' \
+            '1:command:->command' \
+            '2:subcommand:->subcommand' \
+            '3:subcommand2:->subcommand2' \
+            '*::options:->options'
+    elif [ "$number_subcommands" == "1" ]; then
+        if (( CURRENT > 1 )); then
+            command="$words[2]"
+        fi
+        if (( CURRENT > 2 )); then
+            subcommand="$words[3]"
+        fi
+
+        _arguments \
+            '--help[Show help message]' \
+            '1:command:->command' \
+            '2:subcommand:->subcommand' \
+            '*::options:->options'
+    elif [ "$number_subcommands" == "0" ]; then
+        if (( CURRENT > 1 )); then
+            command="$words[2]"
+        fi
+
+        _arguments \
+            '--help[Show help message]' \
+            '1:command:->command' \
+            '*::options:->options'
+    else
+        exit 1
+    fi
+
+
+    case $state in
+        command)
+            # Completion for the first argument (command)
+            local commands
+            commands=()
+            while IFS= read -r line; do
+                commands+=("$line")
+            done <<< "$("$cmd" list_valid_commands "$target" 2>/dev/null)"
+            _describe 'Commands' commands
+            ;;
+        subcommand|subcommand2)
+            # Completion for the second (or third) argument (subcommand) based on the command
+            local subcommands
+            subcommands=()
+            while IFS= read -r line; do
+                subcommands+=("$line")
+            done <<< "$("$cmd" list_valid_subcommands "$command" "$subcommand" 2>/dev/null)"
+            _describe 'Subcommands' subcommands
+            ;;
+        options)
+            # Completion for flags
+            local prev="$words[$CURRENT-1]"
+            local flags
+            flags=()
+            while IFS= read -r line; do
+                flags+=("$line")
+            done <<< "$("$cmd" list_valid_flags "$command" "$target" 2>/dev/null)"
+            while IFS= read -r line; do
+                if [ -z "$line" ]; then
+                    continue
+                fi
+                IFS=':' read -r option validcommand desc <<< "$line"
+                IFS='=' read -r option_name arg_type <<< "$option"
+                if [[ "$option_name" == "$prev" ]]; then
+                    arg_type="${arg_type#*<}"       # Extracts "path>:description"
+                    arg_type="${arg_type%%>*}"      # Extracts "path"
+                    case "$arg_type" in
+                        path)
+                            _files
+                            ;;
+                        version)
+                            _values "version" "0.1.0" "0.2.0" "1.0.0"
+                            ;;
+                        number)
+                            _numbers
+                            ;;
+                        url)
+                            _urls
+                            ;;
+                        *)
+                            # Default to generic word completion
+                            _generic
+                            ;;
+                    esac
+                    flags=()
+                    break
+                else
+                    flags+=("$option_name:=<$arg_type> $desc")
+                fi
+            done <<< "$("$cmd" list_valid_options "$command" "$target" 2>/dev/null)"
+            if [ -n "$flags" ]; then
+                _describe 'Flags' flags
+            fi
+            ;;
+    esac
+}
+
+_run() {
+    local cmd
+    cmd="$words[1]"
+
+    # Ensure the command exists
+    if ! type "$cmd" &>/dev/null; then
+        return 0
+    fi
+
+    # Check if this command is covered by the completion
+    local is_magic_run_script=$("$cmd" is_magic_run_script 2>/dev/null)
+    if [ "$is_magic_run_script" == "true" ]; then
+        builder_helper
+    elif [ "$is_magic_run_script" == "ansible_helper" ]; then
+        ansible_helper
+    else
+        return 0
+    fi
+}
+
+# Associate the _run function with the run command
+compdef _run run

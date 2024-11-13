@@ -1,0 +1,18 @@
+[Unit]
+Description=Concourse CI Worker
+After=network.target
+
+[Service]
+ExecStart=/opt/concourse/bin/concourse worker
+Restart=on-failure
+User=root
+Group=root
+Environment=CONCOURSE_WORK_DIR={{ concourse_ci_work_dir }}
+Environment=CONCOURSE_TSA_HOST={{ concourse_ci_tsa_host }}
+Environment=CONCOURSE_TSA_PUBLIC_KEY={{ concourse_ci_tsa_public_key }}
+Environment=CONCOURSE_TSA_WORKER_PRIVATE_KEY={{ concourse_ci_tsa_worker_private_key }}
+EnvironmentFile=/opt/concourse/envvars
+WorkingDirectory={{ concourse_ci_work_dir }}
+
+[Install]
+WantedBy=multi-user.target

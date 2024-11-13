@@ -1,3 +1,4 @@
+# DESCRIPTION=Run on localhost only with connection local
 all:
   hosts:
     localhost:

@@ -7,3 +7,5 @@
     #- jetbrains
     #- golang
     - docker
+    #- openbao_client
+    # - concourse_ci_worker

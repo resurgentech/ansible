@@ -1,0 +1,15 @@
+#####################################################################################################
+#
+#   These versions should be updated as needed.
+#
+#####################################################################################################
+
+concourse_ci_binary_url: https://github.com/concourse/concourse/releases/download/v7.11.2/concourse-7.11.2-linux-amd64.tgz
+concourse_ci_binary_pkg: concourse-7.11.2-linux-amd64.tgz
+concourse_ci_binary_pkg_checksum: concourse-7.11.2-linux-amd64.tgz.sha1
+concourse_ci_version: 7.11.2
+
+concourse_ci_work_dir: /home/concourse/worker
+concourse_ci_tsa_host: "cci.hulbert.local:2222"
+concourse_ci_tsa_public_key: /opt/concourse/keys/tsa_host_key.pub
+concourse_ci_tsa_worker_private_key: /opt/concourse/keys/worker_key
