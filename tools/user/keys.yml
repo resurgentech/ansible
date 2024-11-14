@@ -1,0 +1,31 @@
+---
+
+# DESCRIPTION=Set up ssh keys for passwordless access
+- name: Set up ssh keys for passwordless access
+  hosts: all
+  vars_prompt:
+    - name: my_user
+      prompt: Enter username to update keys
+      unsafe: yes
+      private: no
+  tasks:
+  - name: "Extracting ssh key for {{ my_user }} from local machine"
+    local_action:
+      module: shell
+      cmd: |
+        if [ -f ~/.ssh/id_ed25519.pub ]; then
+          cat ~/.ssh/id_ed25519.pub
+        elif [ -f ~/.ssh/id_rsa.pub ]; then
+          cat ~/.ssh/id_rsa.pub
+        else
+          exit 1
+        fi
+    become: no
+    register: sshkey
+  - name: Push user ed25519 pub key to machines
+    authorized_key:
+      user: "{{ my_user }}"
+      state: present
+      key: "{{ sshkey.stdout }}"
+    when: my_user != "root"
+    ignore_errors: yes

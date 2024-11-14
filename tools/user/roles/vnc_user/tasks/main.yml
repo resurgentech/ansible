@@ -1,0 +1,41 @@
+---
+
+
+- name: "Find port"
+  shell: |
+    VNCUSER=$(grep ^: /etc/tigervnc/vncserver.users | grep {{ my_user }}$);
+    if [ -z "$VNCUSER" ]; then
+        echo "User {{ my_user }} not found in /etc/tigervnc/vncserver.users"
+        echo ""
+        exit 1
+    else
+        PORT=$(echo "$VNCUSER" | sed 's/.*:\([0-9]\+\)=.*/\1/');
+    fi
+    echo $PORT
+  register: port
+
+- name: "Ensure .vnc directory for user {{ my_user }}"
+  file:
+    state: directory
+    mode: 0755
+    path:  "/home/{{ my_user }}/.vnc"
+    owner: "{{ my_user }}"
+    group: "{{ my_user }}"
+
+- name: "Set up .vnc/config for user {{ my_user }}"
+  template:
+    dest: "/home/{{ my_user }}/.vnc/config"
+    src: config.j2
+    mode: 0644
+    owner: "{{ my_user }}"
+    group: "{{ my_user }}"
+    force: no
+
+- name: "Setup Config file to allow remote access for user {{ my_user }}"
+  template:
+    src: xstartup.j2
+    dest: "/home/{{ my_user }}/.vnc/xstartup"
+    mode: 0775
+    owner: "{{ my_user }}"
+    group: "{{ my_user }}"
+    force: no

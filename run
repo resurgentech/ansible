@@ -11,15 +11,15 @@ SCRIPT_PATH="${0#$PROJECT_DIR}"; [[ ! "$SCRIPT_PATH" =~ ^\..*$ ]] && SCRIPT_PATH
 source $PROJECT_DIR/tools/scripts/ansible_helpers.sh || exit 1
 
 ############################################################################################
-SHORT_DESC="bitflux collector - client for getting training data"
+SHORT_DESC="Ansible Helper"
 ############################################################################################
 
 VALID_COMMANDS=("setup:Installs ansible tool to the local machine:0"
                 "user:Configure user in targets:1"
                 "targets:Run ansible on targets:2")
-VALID_SUBCOMMANDS=("user:password:Setup password"
+VALID_SUBCOMMANDS=("user:password:Set user unix password"
                    "user:keys:Setup ssh keys for passwordless access"
-                   "user:vnc:Setup vnc instance")
+                   "user:vnc:Set up vnc instance for a user")
 VALID_FLAGS=("--help:Show help for this script"
              "--debug:Enable debug mode"
              "--dryrun:Dryrun.  Don't actually run the commands"
