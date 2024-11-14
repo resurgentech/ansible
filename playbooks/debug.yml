@@ -1,5 +1,7 @@
 ---
-- name: Debug Prints
+
+# DESCRIPTION=Helps debug how Ansible is running
+- name: Helps debug how Ansible is running
   hosts: all
   remote_user: root
   vars: 

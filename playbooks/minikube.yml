@@ -1,8 +1,11 @@
 ---
-# Site playbook for resurgent technologies, inc. development desktops
-- name: Advanced and problematic optional roles
+
+# DESCRIPTION=Install minikube
+- name: Install minikube
   hosts: all
   roles:
+    - docker
+    - vm_server
     - minikube
     - minikube_service
     - kubectl

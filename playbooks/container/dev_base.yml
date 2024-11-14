@@ -1,6 +1,7 @@
 ---
-# Site playbook for resurgent technologies, inc. development images
-- name: Basic development tools
+
+# DESCRIPTION=Installs some basic development tools
+- name: Installs some basic development tools
   hosts: all
   remote_user: root
   roles:

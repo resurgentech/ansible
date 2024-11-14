@@ -14,25 +14,24 @@ source $PROJECT_DIR/tools/scripts/ansible_helpers.sh || exit 1
 SHORT_DESC="Ansible Helper"
 ############################################################################################
 
-VALID_COMMANDS=("setup:Installs ansible tool to the local machine:0"
-                "user:Configure user in targets:1"
-                "targets:Run ansible on targets:2")
+VALID_COMMANDS=("basic_install:Configures this machine as a development workstation:0"
+                "user:Configure user in targets:2"
+                "targets:Run ansible on targets:2"
+                "init:Installs ansible tool to the local machine:0")
 VALID_SUBCOMMANDS=("user:password:Set user unix password"
-                   "user:keys:Setup ssh keys for passwordless access"
+                   "user:keys:Set up ssh keys for passwordless access"
                    "user:vnc:Set up vnc instance for a user")
 VALID_FLAGS=("--help:Show help for this script"
-             "--debug:Enable debug mode"
-             "--dryrun:Dryrun.  Don't actually run the commands"
-             "--nosshpassword:Don't ask for ssh password, use keys instead"
+             "--ask-pass:Ask for ssh password, instead of ssh keys"
              "--ask-become-pass:Ask for sudo password"
              "--check:Contact the hosts but don't change anything"
-             "--localhost:Run on localhost")
+             "--localhost:Run on localhost"
+             "--debug:Extra debug prints")
 VALID_OPTIONS=("--verbose=<level>:Verbose output"
                "--user=<username>:User for ssh connection"
                "--hostname=<hostname>:Only run on HOSTNAME rather than all qualified hosts")
 FLAGS_EXPANSIONS=()
 COMMAND_EXPANSIONS=()
-
 
 
 FLAGS=()
@@ -41,63 +40,115 @@ COMMANDS=()
 # Parse command line arguments
 cli_parser $@
 
-
-echo "  ##################################################################"
-echo "  # Running '$SCRIPT_PATH' script"
-echo "  #   Commands: ${COMMANDS[@]}"
-echo "  #   Flags: ${FLAGS[@]}"
-echo "  #   Options: ${OPTIONS[@]}"
-echo "  #-----------------------------------------------------------------"
-
-# Execute the command
-for COMMAND in "${COMMANDS[@]}"; do
-  case "$COMMAND" in
-    setup)
-        echo "Installing ansible and dependencies to local machine, only supports Ubuntu."
-        echo ""
-        cd ${PROJECT_ROOT}/
-
-        # installing prereqs
-        run_command "sudo apt update"
-        run_command "sudo apt-get install -y software-properties-common"
-        # required for ansible over ssh connections
-        run_command "sudo apt install -y sshpass"
-        # actually install ansible
-        run_command "sudo python3 -m pip install ansible"
-        # install ansible galaxy packages (same as ./run galaxy)
-        run_command "ansible-galaxy install -r requirements.yml --force"
-        ;;
-    password)
-        echo "Setting user password on targets"
-        echo ""
-        echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
-        cd ${PROJECT_ROOT}/tools
-
-        run_command "ansible-playbook  -i ../${INVENTORYFILE}  playbook-setup_user_password.yml  ${SSH_PASSWORD}  ${VERBOSE}  ${ANSIBLE_USER}  ${ASK_SUDO_PASSWORD}  ${LIMIT_HOST}  ${CHECK}"
-        ;;
-    keys)
-        echo "Pushing local SSH keys to targets"
-        echo ""
-        echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
-        cd ${PROJECT_ROOT}/tools
-
-        run_command "ansible-playbook  -i ../${INVENTORYFILE}  playbook-setup_user_keys.yml  ${SSH_PASSWORD}  ${VERBOSE}  ${ANSIBLE_USER}  ${ASK_SUDO_PASSWORD}  ${LIMIT_HOST}  ${CHECK}"
-        ;;
-    vnc)
-        echo "Configuring vnc for user ${ANSIBLE_USER}"
-        echo ""
-        echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
-        cd ${PROJECT_ROOT}/tools
-
-        run_command "ansible-playbook  -i ../${INVENTORYFILE}  playbook-setup_vnc.yml  ${SSH_PASSWORD}  ${VERBOSE}  ${ANSIBLE_USER}  ${ASK_SUDO_PASSWORD}  ${LIMIT_HOST}  ${CHECK}"
-        ;;
-    *)
-      show_usage
-      exit 1
-      ;;
-  esac
+# Process flags and options
+PARAMS=()
+for flag in "${FLAGS[@]}"; do
+  if [ "$flag" == "--localhost" ]; then
+    LOCALCONNECTION="--connection=local"
+  elif [ "$flag" == "--debug" ]; then
+    DEBUG="true"
+  else
+    if [ "$flag" == "--ask-pass" ]; then
+      REQUIRE_SSH_PASSWORD="true"
+    fi
+    if [ "$flag" == "--ask-become-pass" ]; then
+      REQUIRE_BECOME_PASSWORD="true"
+    fi
+    PARAMS+=("$flag")
+  fi
+done
+for optionraw in "${OPTIONS[@]}"; do
+  IFS="=" read -r option value <<< "$optionraw"
+  if [ "$option" == "--verbose" ]; then
+    PARAMS+=("-${value:0:1}$(printf 'v%.0s' $(seq 1 ${value}))")
+  elif [ "$option" == "--user" ]; then
+    SELECTED_USER="${value}"
+    PARAMS+=("--extra-vars=ansible_user=${value}")
+  elif [ "$option" == "--hostname" ]; then
+    PARAMS+=("--limit ${value}")
+  else
+    PARAMS+=("$optionraw")
+  fi
 done
 
-echo "  #-----------------------------------------------------------------"
-echo "  # '$SCRIPT_PATH' script DONE"
-echo "  ##################################################################"
+if [ ! -z "$DEBUG" ]; then
+  echo "  ##################################################################"
+  echo "  #   Commands: ${COMMANDS[@]}"
+  echo "  #   Flags: ${FLAGS[@]}"
+  echo "  #   Options: ${OPTIONS[@]}"
+  echo "  #   Params: ${PARAMS[@]}"
+  echo "  #-----------------------------------------------------------------"
+fi
+
+# Execute the command
+case "${COMMANDS[0]}" in
+  basic_install)
+    echo "Installing development tools to this machine."
+    echo ""
+    echo "NOTE: 'BECOME password' below refers to the sudo password for '${USER}'"
+    cd ${PROJECT_DIR}/
+    run_command "ansible-playbook --connection=local -e \"ansible_user=$USER\" -i inventories/localhost.yml ${PROJECT_DIR}/playbooks/dev_desktop.yml --ask-become-pass"
+    ;;
+  init)
+    echo "Installing ansible and dependencies to local machine, only supports Ubuntu."
+    echo ""
+    cd ${PROJECT_DIR}/
+
+    # installing prereqs
+    run_command "sudo apt update"
+    run_command "sudo apt-get install -y software-properties-common"
+    # required for ansible over ssh connections
+    run_command "sudo apt install -y sshpass"
+    # actually install ansible
+    run_command "sudo python3 -m pip install ansible"
+    # install ansible galaxy packages (same as ./run galaxy)
+    run_command "ansible-galaxy install -r requirements.yml --force"
+    ;;
+  user)
+    cd ${PROJECT_DIR}/tools/user
+    INVENTORYFILE="${COMMANDS[2]}"
+    if [ ! -z "$REQUIRE_SSH_PASSWORD" ]; then
+      echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    if [ ! -z "$REQUIRE_BECOME_PASSWORD" ]; then
+      echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    case "${COMMANDS[1]}" in
+      password)
+        echo "Setting user password on targets"
+        run_command "ansible-playbook  $LOCALCONNECTION -i ${PROJECT_DIR}/${INVENTORYFILE} password.yml ${PARAMS[@]}"
+        ;;
+      keys)
+        echo "Pushing local SSH keys to targets"
+        run_command "ansible-playbook  $LOCALCONNECTION -i ${PROJECT_DIR}/${INVENTORYFILE} keys.yml ${PARAMS[@]}"
+        ;;
+      vnc)
+        echo "Configuring vnc for user"
+        run_command "ansible-playbook  $LOCALCONNECTION -i ${PROJECT_DIR}/${INVENTORYFILE} vnc.yml ${PARAMS[@]}}"
+        ;;
+      *)
+        show_usage
+        exit 1
+        ;;
+    esac
+    ;;
+  targets)
+    cd ${PROJECT_DIR}/
+    if [ ! -z "$REQUIRE_SSH_PASSWORD" ]; then
+      echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    if [ ! -z "$REQUIRE_BECOME_PASSWORD" ]; then
+      echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    echo "Run Playbook"
+    run_command "ansible-playbook $LOCALCONNECTION -i ${COMMANDS[1]} ${COMMANDS[2]} ${PARAMS[@]}}"
+    ;;
+  *)
+    show_usage
+    exit 1
+    ;;
+esac

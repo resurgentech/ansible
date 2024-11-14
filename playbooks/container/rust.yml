@@ -1,5 +1,6 @@
 ---
-# Site playbook for resurgent technologies, inc. rust build images
+
+# DESCRIPTION=Enable rust builds
 - name: Enable rust builds
   hosts: all
   remote_user: root

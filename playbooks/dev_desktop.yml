@@ -1,13 +1,16 @@
 ---
-# Site playbook for resurgent technologies, inc. development desktops
-- name: common roles for physical and virtual hosts
+
+# DESCRIPTION=Configures development desktop
+- name: Configures development desktop
   hosts: all
   remote_user: root
   roles:
     - admin_users
     - dev_common
-    #- gui_common
     - docker
     - vm_server
     - nvm_node
     - golang
+    - rust_build
+    - rust_tools
+    - tmux

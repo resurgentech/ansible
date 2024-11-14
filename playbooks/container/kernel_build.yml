@@ -1,5 +1,6 @@
 ---
-# Site playbook for resurgent technologies, inc. kernel build images
+
+# DESCRIPTION=Enable distro kernel package builds
 - name: Enable distro kernel package builds
   hosts: all
   remote_user: root

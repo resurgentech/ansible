@@ -107,13 +107,16 @@ search_for_yml() {
     IFS=':' read -r dir depth <<< "$pair"
     depth=$((depth + 1))
     #echo $(find "./$dir" -maxdepth "$depth" -type f -name "run" -print0)
+    i=1
     while IFS= read -r -d '' scriptfile; do
       scriptpath="$PROJECT_DIR/$scriptfile"
+      #scriptfile=$(echo $scriptfile | sed 's/\//_/g' | sed 's/\./__/g' )
       if [ -f "$scriptpath" ]; then
         response=$( cat "$scriptpath" | grep DESCRIPTION 2>/dev/null)
         IFS='=' read -ra PARTS <<< "$response"
         if [ ${#PARTS[@]} -eq 2 ]; then
           SUBCOMMANDS_LIST+=("$scriptfile:${PARTS[1]}")
+          i=$((i+1))
         else
           SUBCOMMANDS_LIST+=("$scriptfile:")
         fi
@@ -122,31 +125,35 @@ search_for_yml() {
   done
 }
 
+# validate input against a list of valid commands
+validate_commands() {
+  local i=$1
+  # Check if the command is in the valid commands list
+  for line in "${VALID_COMMANDS[@]}"; do
+    IFS=':' read -r command description <<< "$line"
+    if [ "$command" == "$i" ]; then
+      COMMANDS+=("$i")
+      break
+    fi
+  done
+  if [ -z "$COMMANDS" ]; then
+    echo "Unknown Command '$i'"
+    show_usage
+    exit 1
+  fi
+}
+
 # validate options against a list of valid options
 validate_options() {
   local i=$1
   local j=$2
 
-  if [ ! -z "$VALID_TARGETS" ]; then
-    generate_combined_optionslist
-  fi
-
-  is_valid_option=false
-  for command in "${COMMANDS[@]}"; do
-    # Check if the option is in the valid options list
-    for line in "${VALID_OPTIONS[@]}"; do
-      IFS=':' read -r option validcommand description <<< "$line"
-      IFS='=' read -r option_name arg_type <<< "$option"
-      if [ "$option_name" == "$i" ]; then
-        if [ "$validcommand" == "$command" ]; then
-          is_valid_option=true
-          echo "$option_name=$j"
-          break
-        fi
-      fi
-    done
-    if $is_valid_option; then
-      break
+  for optionraw in "${VALID_OPTIONS[@]}"; do
+    IFS=: read -ra optionspart <<< "$optionraw"
+    IFS='=' read -ra OPTION_PARTS <<< "${optionspart[0]}"
+    if [ "$i" == "${OPTION_PARTS[0]}" ]; then
+      echo "$i=$j"
+      return
     fi
   done
 }
@@ -236,6 +243,18 @@ expand_commands_list() {
   done
 }
 
+number_subcommands() {
+  # returns a string 
+  for command in "${VALID_COMMANDS[@]}"; do
+    IFS=':' read -ra PARTS <<< "$command"
+    if [ "${PARTS[0]}" == "$1" ]; then
+      echo "${PARTS[2]}"
+      return
+    fi
+  done
+  echo 0
+}
+
 # opinionated a way to parse out cli arguments
 # Depends on magic variables VALID_TARGETS, VALID_COMMANDS, VALID_FLAGS
 cli_parser() {
@@ -247,14 +266,9 @@ cli_parser() {
         exit 0
         ;;
       number_subcommands)
-        # returns a string 
-        for command in "${VALID_COMMANDS[@]}"; do
-          IFS=':' read -ra PARTS <<< "$command"
-          if [ "${PARTS[0]}" == "$2" ]; then
-            echo "${PARTS[2]}"
-            exit 0
-          fi
-        done
+        # returns a string for the number of subcommands we have
+        number_subcommands $2
+        exit 0
         ;;
       whoami)
         # returns a string that can be used to identify the script
@@ -289,21 +303,20 @@ cli_parser() {
         local subcommand1="$3"
         local SUBCOMMANDS_LIST=()
         # If we've defined some subcommands compare to currentcommand to see if they are relevant
-        for subcommand in "${VALID_SUBCOMMANDS[@]}"; do
-          IFS=':' read -ra PARTS <<< "$subcommand"
-          if [ "${PARTS[0]}" = "$currentcommand" ]; then
-            SUBCOMMANDS_LIST+=("${PARTS[1]}:${PARTS[2]}")
-          fi
-        done
+        if [ -z "$subcommand1" ]; then
+          for subcommand in "${VALID_SUBCOMMANDS[@]}"; do
+            IFS=':' read -ra PARTS <<< "$subcommand"
+            if [ "${PARTS[0]}" = "$currentcommand" ]; then
+              SUBCOMMANDS_LIST+=("${PARTS[1]}:${PARTS[2]}")
+            fi
+          done
+        fi
         # If no subcommands were defined lets handle the special cases
         if [ ${#SUBCOMMANDS_LIST[@]} -eq 0 ]; then
-          if [ "$currentcommand" == "targets" ]; then
-            if [ -z "$subcommand1" ]; then
-              search_for_yml "playbooks:2"
-            else
-              search_for_yml "inventories:2"
-            fi
-            
+          if [ -z "$subcommand1" ]; then
+            search_for_yml "playbooks:2"
+          else
+            search_for_yml "inventories:2"
           fi
         fi
         for command in "${SUBCOMMANDS_LIST[@]}"; do
@@ -334,6 +347,12 @@ cli_parser() {
         ;;
       *)
         if [ ! -z "$COMMANDS" ]; then
+          echo "2=$1"
+          local command="${COMMANDS[0]}"
+          if [ -z "$command" ]; then
+            command="$1"
+          fi
+          echo "command=$command"
           if [[ $1 == --* ]]; then
             # this is a flag or option
             IFS='=' read -ra OPTION_PARTS <<< "$1"
@@ -343,6 +362,7 @@ cli_parser() {
               option=$(validate_options $1 $2)
             fi
             if [ ! -z "$option" ]; then
+              echo "option=$option"
               OPTIONS+=("$option")
               if [ ${#OPTION_PARTS[@]} -lt 2 ]; then
                 shift
@@ -351,11 +371,15 @@ cli_parser() {
               FLAGS+=("$1")
             fi
           else
-            echo "Only one command can be specified at a time: already selected '${COMMANDS[@]}' trying to add '$1'"
-            show_usage
-            exit 1
+            if [ $((${#COMMANDS[@]})) -gt $(($(number_subcommands $command))) ]; then
+              echo "Only one command can be specified at a time: already selected '${COMMANDS[@]}' trying to add '$1'"
+              show_usage
+              exit 1
+            fi
+            COMMANDS+=("$1")
           fi
         fi
+        validate_commands $1
         shift
         ;;
     esac
