@@ -46,7 +46,7 @@ show_usage() {
   echo "Options:"
   for opt in "${VALID_OPTIONS[@]}"; do
     IFS=':' read -r option description <<< "$opt"
-    printf "  %-*s %s\n" $(get_max_length) "$optns" "$description"
+    printf "  %-*s %s\n" $(get_max_length) "$option" "$description"
   done
 }
 
