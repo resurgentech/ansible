@@ -1,5 +1,22 @@
 ---
 
+- name: Create root user
+  user:
+    name: "{{ item }}"
+    state: present
+  register: add_users
+
+# set default_password in the group_vars/all if creating new users
+# To create these hashed passwords, run the following command:
+#  `openssl passwd -6`
+- name: Set default password for root (when user is new)
+  user:
+    name: "{{ item }}"
+    state: present
+    shell: /bin/bash
+    password: "{{ default_password }}"
+  when: add_users.changed
+
 - name: Ensure SSH path for root
   file:
     state: directory
