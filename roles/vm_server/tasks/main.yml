@@ -9,8 +9,9 @@
 - include_tasks: vagrant_per_user.yml
   loop: "{{ admin_users }}"
 
-- name: Install vagrant_tools
-  get_url:
-    url: https://mirror.bitflux.ai/repository/downloads/tools/vagrant_tools
-    dest: /usr/bin/vagrant_tools
-    mode: 0777
+# TODO: Figure out where to download vagrant_tools from
+# - name: Install vagrant_tools
+#   get_url:
+#     url: https://mirror.bitflux.ai/repository/downloads/tools/vagrant_tools
+#     dest: /usr/bin/vagrant_tools
+#     mode: 0777

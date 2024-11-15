@@ -1,0 +1,11 @@
+---
+
+# DESCRIPTION=Install minikube
+- name: Install minikube
+  hosts: all
+  roles:
+    - docker
+    - vm_server
+    - minikube
+    - minikube_service
+    - kubectl

@@ -1,0 +1,46 @@
+---
+
+- name: Check SHA1 of local OpenBao binary
+  shell:
+    cmd: "sha256sum --check bao.sha256"
+    chdir: "{{ role_path }}/files/"
+  changed_when: false
+  ignore_errors: true
+  register: localfile_checksum
+
+- name: Download OpenBao binary locally
+  shell: |
+    docker pull {{ openbao_docker_image }}
+    docker create --name temp_openbao_download {{ openbao_docker_image }}
+    docker cp temp_openbao_download:/bin/bao {{ role_path }}/files/bao
+    docker rm temp_openbao_download
+  delegate_to: localhost
+  become: false
+  when: localfile_checksum.rc != 0
+
+- name: Check OpenBao version
+  command: bao --version
+  register: version_check
+  changed_when: false
+  ignore_errors: true
+
+- name: Compare OpenBao version
+  set_fact:
+    version_match: "{{ openbao_version in version_check.stdout }}"
+
+- name: Copy OpenBao binary to target
+  copy:
+    src: "{{ role_path }}/files/bao"
+    dest: "/usr/local/bin/bao"
+    mode: 0777
+  when: not version_match
+
+- name: Adding OpenBao Env Vars
+  template:
+    src: profile.j2
+    dest: /etc/profile.d/openbao.sh
+
+# CONCOURSE_WORK_DIR=/home/concourse/worker
+# CONCOURSE_TSA_HOST=https://cci.hulbert.local
+# CONCOURSE_TSA_PUBLIC_KEY=/opt/concourse/keys/tsa_host_key.pub
+# CONCOURSE_TSA_WORKER_PRIVATE_KEY=/opt/concourse/keys/worker_key

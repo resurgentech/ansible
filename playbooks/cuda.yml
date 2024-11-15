@@ -1,0 +1,7 @@
+---
+
+# DESCRIPTION=Install cuda drivers and libraries
+- name: Install cuda drivers and libraries
+  hosts: all
+  roles:
+    - cuda

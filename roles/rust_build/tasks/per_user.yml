@@ -1,0 +1,54 @@
+---
+# Install rust
+- name: Check if cargo is installed for '{{ item }}'
+  command: which cargo
+  become: yes
+  become_user: "{{ item }}"
+  register: cargo_check
+  changed_when: false
+  ignore_errors: yes
+
+- name: Download rustup script
+  get_url:
+    url: https://sh.rustup.rs
+    dest: /tmp/rustup.sh
+    mode: 0755
+  when: cargo_check.rc != 0
+
+- name: Run rustup script for '{{ item }}'
+  command: /tmp/rustup.sh -y
+  become: yes
+  become_user: "{{ item }}"
+  when: cargo_check.rc != 0
+
+
+# Install cargo-deb
+- name: Check if cargo-deb is installed for '{{ item }}'
+  command: which cargo-deb
+  become: yes
+  become_user: "{{ item }}"
+  register: cargodeb_check
+  changed_when: false
+  ignore_errors: yes
+
+- name: Install cargo-deb
+  shell: . ~/.cargo/env && cargo install cargo-deb
+  become: yes
+  become_user: "{{ item }}"
+  when: cargodeb_check.rc != 0
+
+
+# Install cargo-generate-rpm
+- name: Check if cargo-generate-rpm is installed for '{{ item }}'
+  command: which cargo-generate-rpm
+  become: yes
+  become_user: "{{ item }}"
+  register: cargorpm_check
+  changed_when: false
+  ignore_errors: yes
+
+- name: Install cargo-generate-rpm
+  shell: . ~/.cargo/env && cargo install cargo-generate-rpm
+  become: yes
+  become_user: "{{ item }}"
+  when: cargorpm_check.rc != 0

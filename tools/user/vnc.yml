@@ -1,0 +1,26 @@
+---
+
+# DESCRIPTION=Set up vnc instance for a user
+- name: Set up vnc instance for a user
+  hosts: all
+  vars_prompt: # Prompt for variables
+    - name: my_user
+      prompt: Enter username to update
+      unsafe: yes
+      private: no
+    - name: my_password
+      prompt: Enter VNC password
+      confirm: yes
+      unsafe: yes
+      private: yes
+  roles:
+    - vnc_user
+  tasks:
+  - name: "Set vncpasswd for {{ my_user }}"
+    shell: sudo -u {{ my_user }} bash -c "printf \"{{ my_password }}\n{{ my_password }}\n\n\" | vncpasswd"
+  - name: "Enable and start vncserver for {{ my_user }} at port {{ port.stdout }}"
+    systemd:
+      name: "vncserver@:{{ port.stdout }}"
+      enabled: yes
+      state: restarted
+    notify: restart systemd daemon

@@ -1,0 +1,32 @@
+---
+
+- name: Ensure SSH path for root
+  file:
+    state: directory
+    mode: 0700
+    path:  "/root/.ssh"
+    owner: "root"
+    group: "root"
+
+- name: Set includedir in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "#includedir /etc/sudoers.d"
+    regexp: '^#includedir'
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: Set secure_path in sudoers
+  lineinfile:
+    dest: /etc/sudoers
+    line: "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin"
+    regexp: '^Defaults\s*secure_path'
+    state: present
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: enable root ssh access
+  vars:
+    sshd_PermitRootLogin: 'yes'
+    sshd_PasswordAuthentication: 'yes'
+  include_role:
+    name: ypsman.sshd_config

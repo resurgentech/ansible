@@ -1,0 +1,9 @@
+---
+- name: Ubuntu2204 rust build Dependancies
+  apt:
+    name:
+      - libstdc++-12-dev
+      - libssl-dev
+      - pkg-config
+      - clang
+    state: present

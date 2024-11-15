@@ -1,0 +1,148 @@
+#!/bin/bash
+
+# Find the directory of the script and change to it
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# Project root, adjust as needed
+PROJECT_DIR="$( cd $SCRIPT_DIR &> /dev/null && pwd )"
+cd "$SCRIPT_DIR"
+# Strip the script path to be relative to project root
+SCRIPT_PATH="${0#$PROJECT_DIR}"; [[ ! "$SCRIPT_PATH" =~ ^\..*$ ]] && SCRIPT_PATH=".$SCRIPT_PATH"
+# Include the run_helpers.sh for 'library' functions
+source $PROJECT_DIR/tools/scripts/ansible_helpers.sh || exit 1
+
+############################################################################################
+SHORT_DESC="Ansible Helper"
+############################################################################################
+
+VALID_COMMANDS=("basic_install:Configures this machine as a development workstation:0"
+                "user:Configure user in targets:2"
+                "targets:Run ansible on targets:2"
+                "init:Installs ansible tool to the local machine:0")
+VALID_SUBCOMMANDS=("user:password:Set user unix password"
+                   "user:keys:Set up ssh keys for passwordless access"
+                   "user:vnc:Set up vnc instance for a user")
+VALID_FLAGS=("--help:Show help for this script"
+             "--ask-pass:Ask for ssh password, instead of ssh keys"
+             "--ask-become-pass:Ask for sudo password"
+             "--check:Contact the hosts but don't change anything"
+             "--localhost:Run on localhost"
+             "--debug:Extra debug prints")
+VALID_OPTIONS=("--verbose=<int>:Verbose output specify 1-3"
+               "--user=<str>:User for ssh connection"
+               "--hostname=<str>:Only run on HOSTNAME rather than all qualified hosts")
+
+
+FLAGS=()
+OPTIONS=()
+COMMANDS=()
+# Parse command line arguments
+cli_parser $@
+
+# Process flags and options
+LOCALCONNECTION=""
+DEBUG=""
+PARAMS=()
+make_ansible_params
+
+run_ansible() {
+  local inventoryfile="$1"
+  local playbookfile="$2"
+  local ansibleparams="$3"
+  local CMD=""
+  CMD+="source ${PROJECT_DIR}/.venv/bin/activate; "
+  CMD+="ANSIBLE_HOST_KEY_CHECKING=False "
+  CMD+="ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles:~/.ansible/roles:/etc/ansible/roles "
+  CMD+="ansible-playbook "
+  CMD+="$LOCALCONNECTION "
+  CMD+="--inventory $inventoryfile $playbookfile $ansibleparams"
+  run_command "$CMD"
+}
+
+if [ ! -z "$DEBUG" ]; then
+  echo "  ##################################################################"
+  echo "  #   Commands: ${COMMANDS[@]}"
+  echo "  #   Flags: ${FLAGS[@]}"
+  echo "  #   Options: ${OPTIONS[@]}"
+  echo "  #   Params: ${PARAMS[@]}"
+  echo "  #-----------------------------------------------------------------"
+fi
+
+# Execute the command
+case "${COMMANDS[0]}" in
+  basic_install)
+    echo "NOTE: 'BECOME password' below refers to the sudo password for '${USER}'"
+    echo ""
+    echo "Installing development tools to this machine."
+    cd ${PROJECT_DIR}/
+    #run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook --connection=local --extra-vars=ansible_user=$USER --inventory inventories/localhost.yml ${PROJECT_DIR}/playbooks/dev_desktop.yml --ask-become-pass"
+    LOCALCONNECTION="--connection=local"
+    run_ansible "inventories/localhost.yml" "./playbooks/dev_desktop.yml" "--ask-become-pass  --extra-vars=ansible_user=$USER"
+    ;;
+  init)
+    echo "Installing ansible and dependencies to local machine, only supports Ubuntu."
+    echo ""
+    cd ${PROJECT_DIR}/
+
+    # installing prereqs
+    run_command "sudo apt update"
+    run_command "sudo apt-get install -y software-properties-common"
+    # required for ansible over ssh connections
+    run_command "sudo apt install -y sshpass"
+    # gonna switch to a venv style
+    run_command "sudo apt install python3-venv"
+    run_command "python3 -m venv .venv"
+    run_command "source ${PROJECT_DIR}/.venv/bin/activate; \
+                 python3 -m pip install --upgrade pip; \
+                 python3 -m pip install -r ${PROJECT_DIR}/tools/scripts/requirements.txt"
+    # install ansible galaxy packages (same as ./run galaxy)
+    run_command "source ${PROJECT_DIR}/.venv/bin/activate; \
+                 ansible-galaxy install -r ${PROJECT_DIR}/tools/scripts/requirements.yml --force"
+    ;;
+  user)
+    cd ${PROJECT_DIR}/tools/user
+    INVENTORYFILE="${COMMANDS[2]}"
+    if [ ! -z "$(require_ssh_password)" ]; then
+      echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    if [ ! -z "$(require_become_password)" ]; then
+      echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    case "${COMMANDS[1]}" in
+      password)
+        echo "Setting user password on targets"
+        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} password.yml ${PARAMS[@]}"
+        ;;
+      keys)
+        echo "Pushing local SSH keys to targets"
+        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} keys.yml ${PARAMS[@]}"
+        ;;
+      vnc)
+        echo "Configuring vnc for user"
+        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} vnc.yml ${PARAMS[@]}}"
+        ;;
+      *)
+        show_usage
+        exit 1
+        ;;
+    esac
+    ;;
+  targets)
+    cd ${PROJECT_DIR}/
+    if [ ! -z "$(require_ssh_password)" ]; then
+      echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    if [ ! -z "$(require_become_password)" ]; then
+      echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
+      echo ""
+    fi
+    echo "Run Playbook"
+    run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles  ansible-playbook $LOCALCONNECTION --inventory ${COMMANDS[1]} ${COMMANDS[2]} ${PARAMS[@]}}"
+    ;;
+  *)
+    show_usage
+    exit 1
+    ;;
+esac

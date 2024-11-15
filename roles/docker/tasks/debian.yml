@@ -11,15 +11,3 @@
 - name: docker install
   include_role:
     name: geerlingguy.docker
-
-- name: Debian insecure repository file
-  template:
-    src: dockerdaemonjson.j2
-    dest: /etc/docker/daemon.json
-  register: insecure
-
-- name: Restart Docker if needed
-  systemd:
-    name: docker
-    state: restarted
-  when: insecure.changed

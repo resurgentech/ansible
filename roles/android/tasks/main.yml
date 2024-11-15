@@ -1,0 +1,16 @@
+---
+
+# For now, it doesn't actually install android build tools,
+# just adds udev rules so your adb stuff works
+# and will add already installed android platform tools to your path
+
+- name: Adding udev rules for android
+  template:
+    src: 51-android.rules.j2
+    dest: /etc/udev/rules.d/51-android.rules
+  notify: reload udevadm rules
+
+- name: Adding android tools to PATH
+  template:
+    src: profile.j2
+    dest: /etc/profile.d/android.sh
