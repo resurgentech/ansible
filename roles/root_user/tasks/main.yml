@@ -2,7 +2,7 @@
 
 - name: Create root user
   user:
-    name: "{{ item }}"
+    name: root
     state: present
   register: add_users
 
@@ -11,7 +11,7 @@
 #  `openssl passwd -6`
 - name: Set default password for root (when user is new)
   user:
-    name: "{{ item }}"
+    name: root
     state: present
     shell: /bin/bash
     password: "{{ default_password }}"
