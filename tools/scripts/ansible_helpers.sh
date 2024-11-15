@@ -7,7 +7,7 @@
 # find largest command/flag/target name length
 get_max_length() {
   max_length=0
-  for cmd in "${VALID_COMMANDS[@]} ${VALID_FLAGS[@]} ${VALID_TARGETS[@]}"; do
+  for cmd in "${VALID_COMMANDS[@]} ${VALID_FLAGS[@]} ${VALID_OPTIONS[@]}"; do
     IFS=':' read -r command description <<< "$cmd"
     if [ ${#command} -gt $max_length ]; then
       max_length=${#command}
@@ -31,18 +31,8 @@ update_cargo_toml() {
 # Function to display usage information
 show_usage() {
   echo ""
-  if [ -z "$VALID_TARGETS" ]; then
-    echo "Usage: $SCRIPT_PATH COMMAND [FLAGS]"
-    echo ""
-  else
-    echo "Usage: $SCRIPT_PATH TARGET COMMAND [FLAGS]"
-    echo ""
-    echo "Targets:"
-    for cmd in "${VALID_TARGETS[@]}"; do
-      IFS=':' read -r command description <<< "$cmd"
-      printf "  %-*s %s\n" $(get_max_length) "$command" "$description"
-    done
-  fi
+  echo "Usage: $SCRIPT_PATH COMMAND [FLAGS]"
+  echo ""
   echo "Commands:"
   for cmd in "${VALID_COMMANDS[@]}"; do
     IFS=':' read -r command description <<< "$cmd"
@@ -52,6 +42,11 @@ show_usage() {
   for flg in "${VALID_FLAGS[@]}"; do
     IFS=':' read -r flags description <<< "$flg"
     printf "  %-*s %s\n" $(get_max_length) "$flags" "$description"
+  done
+  echo "Options:"
+  for opt in "${VALID_OPTIONS[@]}"; do
+    IFS=':' read -r option description <<< "$opt"
+    printf "  %-*s %s\n" $(get_max_length) "$optns" "$description"
   done
 }
 
@@ -181,65 +176,47 @@ parse_options() {
   done
 }
 
-# expand flags list
-# example:
-#  Having the variable set:
-#    FLAGS_EXPANSIONS=("--debug:--debug --verbose")
-#  replaces --debug with --debug and --verbose in FLAGS
-expand_flags_list() {
-  if [ -z "$FLAGS_EXPANSIONS" ]; then
-    return
-  fi
-  for expansion in "${FLAGS_EXPANSIONS[@]}"; do
-    IFS=":" read -r oldflag newflags <<< "$expansion"
-    local expanded_flags=()
-    for flag in "${FLAGS[@]}"; do
-      if [ "$flag" == "$oldflag" ]; then
-        for newflag in $newflags; do
-          expanded_flags+=("$newflag")
-        done
-      else
-        expanded_flags+=("$flag")
-      fi
-    done
-    FLAGS=()
-    for flag in "${expanded_flags[@]}"; do
-      FLAGS+=("$flag")
-    done
+# turn FLAGS and OPTIONS into PARAMS for ansible
+make_ansible_params() {
+  for flag in "${FLAGS[@]}"; do
+    if [ "$flag" == "--localhost" ]; then
+      LOCALCONNECTION="--connection=local"
+    elif [ "$flag" == "--debug" ]; then
+      DEBUG="true"
+    else
+      PARAMS+=("$flag")
+    fi
+  done
+  for optionraw in "${OPTIONS[@]}"; do
+    IFS="=" read -r option value <<< "$optionraw"
+    if [ "$option" == "--verbose" ]; then
+      PARAMS+=("-${value:0:1}$(printf 'v%.0s' $(seq 1 ${value}))")
+    elif [ "$option" == "--user" ]; then
+      SELECTED_USER="${value}"
+      PARAMS+=("--extra-vars=ansible_user=${value}")
+    elif [ "$option" == "--hostname" ]; then
+      PARAMS+=("--limit ${value}")
+    else
+      PARAMS+=("$optionraw")
+    fi
   done
 }
 
-# expand commands list
-# example:
-#  Having the variable set:
-#    COMMAND_EXPANSIONS=("build:build compile")
-#  replaces build with build and compile in COMMANDS
-expand_commands_list() {
-  if [ -z "$COMMAND_EXPANSIONS" ]; then
-    return
-  fi
-  for expansion in "${COMMAND_EXPANSIONS[@]}"; do
-    IFS=":" read -r oldcommand newcommands <<< "$expansion"
-    if [ ! -z "$(parse_flags '--debug')" ]; then
-      echo "expanding command '$oldcommand' to '$newcommands'"
+require_ssh_password() {
+  for param in "${PARAMS[@]}"; do
+    if [ "$param" == "--ask-pass" ]; then
+      echo "true"
+      return
     fi
-    local expanded_commands=()
-    for command in "${COMMANDS[@]}"; do
-      if [ "$command" == "$oldcommand" ]; then
-        for newcommand in $newcommands; do
-          expanded_commands+=("$newcommand")
-          if [ ! -z "$(parse_flags '--debug')" ]; then
-            echo "adding command '$newcommand'"
-          fi
-        done
-      else
-        expanded_commands+=("$command")
-      fi
-    done
-    COMMANDS=()
-    for command in "${expanded_commands[@]}"; do
-      COMMANDS+=("$command")
-    done
+  done
+}
+
+require_become_password() {
+  for param in "${PARAMS[@]}"; do
+    if [ "$param" == "--ask-become-pass" ]; then
+      echo "true"
+      return
+    fi
   done
 }
 
@@ -256,7 +233,7 @@ number_subcommands() {
 }
 
 # opinionated a way to parse out cli arguments
-# Depends on magic variables VALID_TARGETS, VALID_COMMANDS, VALID_FLAGS
+# Depends on magic variables VALID_COMMANDS, VALID_SUBCOMMANDS, VALID_FLAGS, VALID_OPTIONS
 cli_parser() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -347,12 +324,10 @@ cli_parser() {
         ;;
       *)
         if [ ! -z "$COMMANDS" ]; then
-          echo "2=$1"
           local command="${COMMANDS[0]}"
           if [ -z "$command" ]; then
             command="$1"
           fi
-          echo "command=$command"
           if [[ $1 == --* ]]; then
             # this is a flag or option
             IFS='=' read -ra OPTION_PARTS <<< "$1"
@@ -362,7 +337,6 @@ cli_parser() {
               option=$(validate_options $1 $2)
             fi
             if [ ! -z "$option" ]; then
-              echo "option=$option"
               OPTIONS+=("$option")
               if [ ${#OPTION_PARTS[@]} -lt 2 ]; then
                 shift
@@ -390,11 +364,9 @@ cli_parser() {
     show_usage
     exit 1
   fi
-  #  uses FLAGS_EXPANSIONS and COMMAND_EXPANSIONS to expand the lists
-  #  This is useful for things like --debug which is expanded to --debug --verbose
-  expand_flags_list
-  expand_commands_list
 }
+
+# ======================================================================================
 
 install_zsh_completion() {
   run_command "mkdir -p ~/.oh-my-zsh/completions"

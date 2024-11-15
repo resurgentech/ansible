@@ -27,11 +27,9 @@ VALID_FLAGS=("--help:Show help for this script"
              "--check:Contact the hosts but don't change anything"
              "--localhost:Run on localhost"
              "--debug:Extra debug prints")
-VALID_OPTIONS=("--verbose=<level>:Verbose output"
-               "--user=<username>:User for ssh connection"
-               "--hostname=<hostname>:Only run on HOSTNAME rather than all qualified hosts")
-FLAGS_EXPANSIONS=()
-COMMAND_EXPANSIONS=()
+VALID_OPTIONS=("--verbose=<int>:Verbose output specify 1-3"
+               "--user=<str>:User for ssh connection"
+               "--hostname=<str>:Only run on HOSTNAME rather than all qualified hosts")
 
 
 FLAGS=()
@@ -41,35 +39,24 @@ COMMANDS=()
 cli_parser $@
 
 # Process flags and options
+LOCALCONNECTION=""
+DEBUG=""
 PARAMS=()
-for flag in "${FLAGS[@]}"; do
-  if [ "$flag" == "--localhost" ]; then
-    LOCALCONNECTION="--connection=local"
-  elif [ "$flag" == "--debug" ]; then
-    DEBUG="true"
-  else
-    if [ "$flag" == "--ask-pass" ]; then
-      REQUIRE_SSH_PASSWORD="true"
-    fi
-    if [ "$flag" == "--ask-become-pass" ]; then
-      REQUIRE_BECOME_PASSWORD="true"
-    fi
-    PARAMS+=("$flag")
-  fi
-done
-for optionraw in "${OPTIONS[@]}"; do
-  IFS="=" read -r option value <<< "$optionraw"
-  if [ "$option" == "--verbose" ]; then
-    PARAMS+=("-${value:0:1}$(printf 'v%.0s' $(seq 1 ${value}))")
-  elif [ "$option" == "--user" ]; then
-    SELECTED_USER="${value}"
-    PARAMS+=("--extra-vars=ansible_user=${value}")
-  elif [ "$option" == "--hostname" ]; then
-    PARAMS+=("--limit ${value}")
-  else
-    PARAMS+=("$optionraw")
-  fi
-done
+make_ansible_params
+
+run_ansible() {
+  local inventoryfile="$1"
+  local playbookfile="$2"
+  local ansibleparams="$3"
+  local CMD=""
+  CMD+="source ${PROJECT_DIR}/.venv/bin/activate; "
+  CMD+="ANSIBLE_HOST_KEY_CHECKING=False "
+  CMD+="ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles:~/.ansible/roles:/etc/ansible/roles "
+  CMD+="ansible-playbook "
+  CMD+="$LOCALCONNECTION "
+  CMD+="--inventory $inventoryfile $playbookfile $ansibleparams"
+  run_command "$CMD"
+}
 
 if [ ! -z "$DEBUG" ]; then
   echo "  ##################################################################"
@@ -83,11 +70,13 @@ fi
 # Execute the command
 case "${COMMANDS[0]}" in
   basic_install)
-    echo "Installing development tools to this machine."
-    echo ""
     echo "NOTE: 'BECOME password' below refers to the sudo password for '${USER}'"
+    echo ""
+    echo "Installing development tools to this machine."
     cd ${PROJECT_DIR}/
-    run_command "ansible-playbook --connection=local -e \"ansible_user=$USER\" -i inventories/localhost.yml ${PROJECT_DIR}/playbooks/dev_desktop.yml --ask-become-pass"
+    #run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook --connection=local --extra-vars=ansible_user=$USER --inventory inventories/localhost.yml ${PROJECT_DIR}/playbooks/dev_desktop.yml --ask-become-pass"
+    LOCALCONNECTION="--connection=local"
+    run_ansible "inventories/localhost.yml" "./playbooks/dev_desktop.yml" "--ask-become-pass  --extra-vars=ansible_user=$USER"
     ;;
   init)
     echo "Installing ansible and dependencies to local machine, only supports Ubuntu."
@@ -99,34 +88,39 @@ case "${COMMANDS[0]}" in
     run_command "sudo apt-get install -y software-properties-common"
     # required for ansible over ssh connections
     run_command "sudo apt install -y sshpass"
-    # actually install ansible
-    run_command "sudo python3 -m pip install ansible"
+    # gonna switch to a venv style
+    run_command "sudo apt install python3-venv"
+    run_command "python3 -m venv .venv"
+    run_command "source ${PROJECT_DIR}/.venv/bin/activate; \
+                 python3 -m pip install --upgrade pip; \
+                 python3 -m pip install -r ${PROJECT_DIR}/tools/scripts/requirements.txt"
     # install ansible galaxy packages (same as ./run galaxy)
-    run_command "ansible-galaxy install -r requirements.yml --force"
+    run_command "source ${PROJECT_DIR}/.venv/bin/activate; \
+                 ansible-galaxy install -r ${PROJECT_DIR}/tools/scripts/requirements.yml --force"
     ;;
   user)
     cd ${PROJECT_DIR}/tools/user
     INVENTORYFILE="${COMMANDS[2]}"
-    if [ ! -z "$REQUIRE_SSH_PASSWORD" ]; then
+    if [ ! -z "$(require_ssh_password)" ]; then
       echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ ! -z "$REQUIRE_BECOME_PASSWORD" ]; then
+    if [ ! -z "$(require_become_password)" ]; then
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
     case "${COMMANDS[1]}" in
       password)
         echo "Setting user password on targets"
-        run_command "ansible-playbook  $LOCALCONNECTION -i ${PROJECT_DIR}/${INVENTORYFILE} password.yml ${PARAMS[@]}"
+        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} password.yml ${PARAMS[@]}"
         ;;
       keys)
         echo "Pushing local SSH keys to targets"
-        run_command "ansible-playbook  $LOCALCONNECTION -i ${PROJECT_DIR}/${INVENTORYFILE} keys.yml ${PARAMS[@]}"
+        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} keys.yml ${PARAMS[@]}"
         ;;
       vnc)
         echo "Configuring vnc for user"
-        run_command "ansible-playbook  $LOCALCONNECTION -i ${PROJECT_DIR}/${INVENTORYFILE} vnc.yml ${PARAMS[@]}}"
+        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} vnc.yml ${PARAMS[@]}}"
         ;;
       *)
         show_usage
@@ -136,16 +130,16 @@ case "${COMMANDS[0]}" in
     ;;
   targets)
     cd ${PROJECT_DIR}/
-    if [ ! -z "$REQUIRE_SSH_PASSWORD" ]; then
+    if [ ! -z "$(require_ssh_password)" ]; then
       echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ ! -z "$REQUIRE_BECOME_PASSWORD" ]; then
+    if [ ! -z "$(require_become_password)" ]; then
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
     echo "Run Playbook"
-    run_command "ansible-playbook $LOCALCONNECTION -i ${COMMANDS[1]} ${COMMANDS[2]} ${PARAMS[@]}}"
+    run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles  ansible-playbook $LOCALCONNECTION --inventory ${COMMANDS[1]} ${COMMANDS[2]} ${PARAMS[@]}}"
     ;;
   *)
     show_usage
