@@ -1,7 +1,18 @@
 ---
-# Install rust
-- name: Check if cargo is installed for '{{ item }}'
-  command: which cargo
+
+# We need the users prefered shell to tell if cargo is installed
+- name: Get default shell for '{{ item }}'
+  command: getent passwd {{ item }}
+  register: passwd_info
+  changed_when: false
+
+- name: Parse default shell for '{{ item }}'
+  set_fact:
+    user_shell: "{{ passwd_info.stdout.split(':')[-1] | trim }}"
+
+- name: Check if cargo is installed for '{{ item }}' who uses '{{ user_shell }}'"
+  shell: |
+    {{ user_shell }} -lc 'which cargo'
   become: yes
   become_user: "{{ item }}"
   register: cargo_check
@@ -15,7 +26,8 @@
     mode: 0755
   when: cargo_check.rc != 0
 
-- name: Run rustup script for '{{ item }}'
+# Install rust
+- name: Install rust and tools with the rustup script for '{{ item }}'
   command: /tmp/rustup.sh -y
   become: yes
   become_user: "{{ item }}"
@@ -24,7 +36,8 @@
 
 # Install cargo-deb
 - name: Check if cargo-deb is installed for '{{ item }}'
-  command: which cargo-deb
+  shell: |
+    {{ user_shell }} -lc 'which cargo-deb'
   become: yes
   become_user: "{{ item }}"
   register: cargodeb_check
@@ -40,7 +53,8 @@
 
 # Install cargo-generate-rpm
 - name: Check if cargo-generate-rpm is installed for '{{ item }}'
-  command: which cargo-generate-rpm
+  shell: |
+    {{ user_shell }} -lc 'which cargo-generate-rpm'
   become: yes
   become_user: "{{ item }}"
   register: cargorpm_check
