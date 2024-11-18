@@ -74,7 +74,6 @@ case "${COMMANDS[0]}" in
     echo ""
     echo "Installing development tools to this machine."
     cd ${PROJECT_DIR}/
-    #run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook --connection=local --extra-vars=ansible_user=$USER --inventory inventories/localhost.yml ${PROJECT_DIR}/playbooks/dev_desktop.yml --ask-become-pass"
     LOCALCONNECTION="--connection=local"
     run_ansible "inventories/localhost.yml" "./playbooks/dev_desktop.yml" "--ask-become-pass  --extra-vars=ansible_user=$USER"
     ;;
@@ -100,27 +99,26 @@ case "${COMMANDS[0]}" in
     ;;
   user)
     cd ${PROJECT_DIR}/tools/user
-    INVENTORYFILE="${COMMANDS[2]}"
-    if [ ! -z "$(require_ssh_password)" ]; then
+    if [ "$(params_has_param '--ask-pass')" == "true" ]; then
       echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ ! -z "$(require_become_password)" ]; then
+    if [ "$(params_has_param '--ask-become-pass')" == "true" ]; then
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
     case "${COMMANDS[1]}" in
       password)
         echo "Setting user password on targets"
-        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} password.yml ${PARAMS[@]}"
+        run_ansible "${COMMANDS[2]}" "password.yml" "${PARAMS[@]}"
         ;;
       keys)
         echo "Pushing local SSH keys to targets"
-        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} keys.yml ${PARAMS[@]}"
+        run_ansible "${COMMANDS[2]}" "keys.yml" "${PARAMS[@]}"
         ;;
       vnc)
         echo "Configuring vnc for user"
-        run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles ansible-playbook  $LOCALCONNECTION --inventory ${PROJECT_DIR}/${INVENTORYFILE} vnc.yml ${PARAMS[@]}}"
+        run_ansible "${COMMANDS[2]}" "vnc.yml" "${PARAMS[@]}"
         ;;
       *)
         show_usage
@@ -130,16 +128,16 @@ case "${COMMANDS[0]}" in
     ;;
   targets)
     cd ${PROJECT_DIR}/
-    if [ ! -z "$(require_ssh_password)" ]; then
+    if [ "$(params_has_param '--ask-pass')" == "true" ]; then
       echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ ! -z "$(require_become_password)" ]; then
+    if [ "$(params_has_param '--ask-become-pass')" == "true" ]; then
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
     echo "Run Playbook"
-    run_command "source ${PROJECT_DIR}/.venv/bin/activate; ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles  ansible-playbook $LOCALCONNECTION --inventory ${COMMANDS[1]} ${COMMANDS[2]} ${PARAMS[@]}}"
+    run_ansible "${COMMANDS[1]}" "${COMMANDS[2]}" "${PARAMS[@]}"
     ;;
   *)
     show_usage

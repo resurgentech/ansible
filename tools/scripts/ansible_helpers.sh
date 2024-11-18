@@ -200,24 +200,20 @@ make_ansible_params() {
       PARAMS+=("$optionraw")
     fi
   done
+  if [ -z "$SELECTED_USER" ]; then
+    SELECTED_USER="$USER"
+  fi
 }
 
-require_ssh_password() {
+params_has_param() {
+  local param_to_test=$1
   for param in "${PARAMS[@]}"; do
-    if [ "$param" == "--ask-pass" ]; then
+    if [ "$param" == "$param_to_test" ]; then
       echo "true"
       return
     fi
   done
-}
-
-require_become_password() {
-  for param in "${PARAMS[@]}"; do
-    if [ "$param" == "--ask-become-pass" ]; then
-      echo "true"
-      return
-    fi
-  done
+  echo "false"
 }
 
 number_subcommands() {
