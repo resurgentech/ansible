@@ -153,6 +153,19 @@ validate_options() {
   done
 }
 
+# validate flags against a list of valid flags
+validate_flags() {
+  local i=$1
+
+  for flagraw in "${VALID_FLAGS[@]}"; do
+    IFS=: read -ra flagspart <<< "$flagraw"
+    if [ "${flagspart[0]}" == "$i" ]; then
+      echo "$1"
+      return
+    fi
+  done
+}
+
 # find an flag in a list of valid flags
 parse_flags() {
   local i=$1
@@ -178,11 +191,16 @@ parse_options() {
 
 # turn FLAGS and OPTIONS into PARAMS for ansible
 make_ansible_params() {
+  # list of flags not to pass to ansible
+  nonansible_flags=("--dryrun" "--upgrade")
   for flag in "${FLAGS[@]}"; do
     if [ "$flag" == "--localhost" ]; then
       LOCALCONNECTION="--connection=local"
     elif [ "$flag" == "--debug" ]; then
       DEBUG="true"
+    elif [[ " ${nonansible_flags[@]} " =~ " ${flag} " ]]; then
+      # Skip non-ansible flags
+      continue
     else
       PARAMS+=("$flag")
     fi
@@ -205,10 +223,10 @@ make_ansible_params() {
   fi
 }
 
-params_has_param() {
-  local param_to_test=$1
-  for param in "${PARAMS[@]}"; do
-    if [ "$param" == "$param_to_test" ]; then
+flags_has_flag() {
+  local flag_to_test=$1
+  for flag in "${FLAGS[@]}"; do
+    if [ "$flag" == "$flag_to_test" ]; then
       echo "true"
       return
     fi
@@ -338,7 +356,14 @@ cli_parser() {
                 shift
               fi
             else
-              FLAGS+=("$1")
+              if [ -z "$(validate_flags $1)" ]; then
+                echo "$(validate_flags $1)"
+                echo "Invalid flag or option: $1"
+                show_usage
+                exit 1
+              else
+                FLAGS+=("$1")
+              fi
             fi
           else
             if [ $((${#COMMANDS[@]})) -gt $(($(number_subcommands $command))) ]; then

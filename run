@@ -26,6 +26,8 @@ VALID_FLAGS=("--help:Show help for this script"
              "--ask-become-pass:Ask for sudo password"
              "--check:Contact the hosts but don't change anything"
              "--localhost:Run on localhost"
+             "--upgrade:Update and upgrade the target system before running"
+             "--dryrun:Dryrun.  Don't actually run the commands"
              "--debug:Extra debug prints")
 VALID_OPTIONS=("--verbose=<int>:Verbose output specify 1-3"
                "--user=<str>:User for ssh connection"
@@ -72,6 +74,10 @@ case "${COMMANDS[0]}" in
   basic_install)
     echo "NOTE: 'BECOME password' below refers to the sudo password for '${USER}'"
     echo ""
+    if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
+      echo "Upgrading this machine."
+      run_ansible "inventories/labtwo.yml" "./playbooks/upgrade.yml" "${PARAMS[@]}"
+    fi
     echo "Installing development tools to this machine."
     cd ${PROJECT_DIR}/
     LOCALCONNECTION="--connection=local"
@@ -99,11 +105,11 @@ case "${COMMANDS[0]}" in
     ;;
   user)
     cd ${PROJECT_DIR}/tools/user
-    if [ "$(params_has_param '--ask-pass')" == "true" ]; then
+    if [ "$(flags_has_flag '--ask-pass')" == "true" ]; then
       echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ "$(params_has_param '--ask-become-pass')" == "true" ]; then
+    if [ "$(flags_has_flag '--ask-become-pass')" == "true" ]; then
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
@@ -128,13 +134,17 @@ case "${COMMANDS[0]}" in
     ;;
   targets)
     cd ${PROJECT_DIR}/
-    if [ "$(params_has_param '--ask-pass')" == "true" ]; then
+    if [ "$(flags_has_flag '--ask-pass')" == "true" ]; then
       echo "NOTE: 'SSH password' below refers to the password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ "$(params_has_param '--ask-become-pass')" == "true" ]; then
+    if [ "$(flags_has_flag '--ask-become-pass')" == "true" ]; then
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
+    fi
+    if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
+      echo "Upgrading before running playbook"
+      run_ansible "${COMMANDS[1]}" "./playbooks/upgrade.yml" "${PARAMS[@]}"
     fi
     echo "Run Playbook"
     run_ansible "${COMMANDS[1]}" "${COMMANDS[2]}" "${PARAMS[@]}"
