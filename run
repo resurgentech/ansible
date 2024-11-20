@@ -147,7 +147,7 @@ case "${COMMANDS[0]}" in
       run_ansible "${COMMANDS[1]}" "./playbooks/upgrade.yml" "${PARAMS[@]}"
     fi
     echo "Run Playbook"
-    run_ansible "${COMMANDS[1]}" "${COMMANDS[2]}" "${PARAMS[@]}"
+    run_ansible "${COMMANDS[2]}" "${COMMANDS[1]}" "${PARAMS[@]}"
     ;;
   *)
     show_usage

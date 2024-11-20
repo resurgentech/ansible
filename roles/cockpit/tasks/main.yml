@@ -1,0 +1,17 @@
+---
+
+- name: Install cockpit
+  apt:
+    name: cockpit
+    state: present
+    default_release: "{{ ansible_distribution_release }}-backports"
+  become: true
+
+- name: Install cockpit addons
+  apt:
+    name: 
+    - cockpit-machines
+    - udisks2-lvm2
+    - udisks2-btrfs
+    state: present
+  become: true
