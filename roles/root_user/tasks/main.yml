@@ -41,9 +41,16 @@
     state: present
     validate: "/usr/sbin/visudo -cf %s"
 
-- name: enable root ssh access
-  vars:
-    sshd_PermitRootLogin: 'yes'
-    sshd_PasswordAuthentication: 'yes'
-  include_role:
-    name: ypsman.sshd_config
+- name: sshd PermitRootLogin set to 'yes'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: PermitRootLogin yes
+    validate: 'sshd -t -f %s'
+
+- name: sshd PasswordAuthentication set to 'yes'
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: PasswordAuthentication yes
+    validate: 'sshd -t -f %s'

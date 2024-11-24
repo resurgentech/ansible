@@ -1,10 +1,8 @@
 ---
 # Sets up tigervnc
 
-# Notice, we can install tigervnc on ubuntu/debian, but it is apparently too old (go figure) to allow
-# for systemd config. TODO: implement the manual systemd file generation stuff for debian vnc, or use something more common
-#- include_tasks: debian.yml
-# when: debian_based|bool
+- include_tasks: debian.yml
+  when: debian_based|bool
 
 - include_tasks: redhat.yml
   when: redhat_based|bool
@@ -13,4 +11,3 @@
   loop: "{{ vnc_users }}"
   loop_control:
     index_var: index
-  when: redhat_based|bool

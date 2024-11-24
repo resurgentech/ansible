@@ -20,7 +20,7 @@
     shell: sudo -u {{ my_user }} bash -c "printf \"{{ my_password }}\n{{ my_password }}\n\n\" | vncpasswd"
   - name: "Enable and start vncserver for {{ my_user }} at port {{ port.stdout }}"
     systemd:
-      name: "vncserver@:{{ port.stdout }}"
+      name: "tigervncserver@:{{ port.stdout }}"
       enabled: yes
       state: restarted
     notify: restart systemd daemon

@@ -22,16 +22,24 @@
     path: /etc/tigervnc/vncserver.users
     line: ":{{ index + 2 }}={{ item }}"
 
-- name: Open vncserver ports
+- name: Open vncserver ports with ufw
+  ufw:
+    rule: allow
+    port: "590{{ index + 2 }}"
+    proto: tcp
+  when: ubuntu2404_based|bool
+
+- name: Open vncserver ports with firewall
   firewalld:
     port: "590{{ index + 2 }}/tcp"
     zone: public
     permanent: yes
     immediate: yes
     state: enabled
+  when: redhat_based|bool
 
 - name: "Enable and start vncserver for {{ item }}"
   systemd:
-    name: "vncserver@:{{ index + 2 }}"
+    name: "tigervncserver@:{{ index + 2 }}"
     enabled: yes
   notify: restart systemd daemon

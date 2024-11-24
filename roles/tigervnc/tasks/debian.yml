@@ -4,6 +4,7 @@
   apt:
     state: present
     name:
+      - ubuntu-desktop-minimal
       - tigervnc-standalone-server
       - tigervnc-xorg-extension
       - tigervnc-viewer
