@@ -12,7 +12,7 @@
 
 # using --locked because some apps need it.
 - name: Install '{{ app_name }}' for '{{ current_user }}'
-  shell: "source ~/.cargo/env && cargo install {{ app_name }} --locked"
+  shell: "source ~/.cargo/env && cargo install {{ app_name }} --locked --jobs=$(nproc)"
   args:
     executable: /bin/bash
   become: yes

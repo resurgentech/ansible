@@ -12,12 +12,9 @@
 # Installing rust tools is actually a per user task
 # We're gonna run a loop in a loop
 #  main.yml
-#    for user in admin_users
+#    for user in full_users
 #      per_user.yml
 #      for app in apps
 #        per_app.yml
 - include_tasks: per_user.yml
-  loop: "{{ admin_users }}"
-
-- include_tasks: per_user.yml
-  loop: [root]
+  loop: "{{ full_users }}"

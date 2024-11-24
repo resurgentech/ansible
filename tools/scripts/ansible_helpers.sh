@@ -208,7 +208,7 @@ make_ansible_params() {
   for optionraw in "${OPTIONS[@]}"; do
     IFS="=" read -r option value <<< "$optionraw"
     if [ "$option" == "--verbose" ]; then
-      PARAMS+=("-${value:0:1}$(printf 'v%.0s' $(seq 1 ${value}))")
+      PARAMS+=("-$(printf 'v%.0s' $(seq 1 ${value}))")
     elif [ "$option" == "--user" ]; then
       SELECTED_USER="${value}"
       PARAMS+=("--extra-vars=ansible_user=${value}")

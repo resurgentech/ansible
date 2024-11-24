@@ -47,9 +47,19 @@ PARAMS=()
 make_ansible_params
 
 run_ansible() {
-  local inventoryfile="$1"
-  local playbookfile="$2"
-  local ansibleparams="$3"
+  local inventoryfile=""
+  local playbookfile=""
+  local ansibleparams=""
+  while [[ $# -gt 0 ]]; do
+    if [ -z "$inventoryfile" ]; then
+      inventoryfile="$1"
+    elif [ -z "$playbookfile" ]; then
+      playbookfile="$1"
+    else
+      ansibleparams="$ansibleparams $1"
+    fi
+    shift
+  done
   local CMD=""
   CMD+="source ${PROJECT_DIR}/.venv/bin/activate; "
   CMD+="ANSIBLE_HOST_KEY_CHECKING=False "
