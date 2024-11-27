@@ -17,11 +17,14 @@
       - libbabeltrace-dev
       - libbabeltrace-ctf-dev
       - python3-pip
+      - python3-jinja2
+      - python3-yaml
+      - python3-git
       - clang
       - llvm
     state: present
 
-- name: Ubuntu python-config hack
-  shell: python3 -m pip install python-config && \
-         rm -f /usr/bin/python-config && \
-         ln -s /usr/bin/python3-config /usr/bin/python-config
+# - name: Ubuntu python-config hack
+#   shell: python3 -m pip install python-config && \
+#          rm -f /usr/bin/python-config && \
+#          ln -s /usr/bin/python3-config /usr/bin/python-config
