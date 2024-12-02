@@ -1,4 +1,5 @@
 ---
+# For APT based distros that use /etc/apt/sources.list.d/
 
 - name: Check if ubuntu-src.sources exists
   shell: |
@@ -19,7 +20,7 @@
     sed 's/Types\: deb$/Types\: deb-src/g' \
     > /etc/apt/sources.list.d/ubuntu-src.sources
   register: ubuntu_src_updated
-  when: ubuntu_src_sources.rc  != 0
+  when: ubuntu_src_sources.rc != 0
 
 - name: Update apt package cache again
   apt:

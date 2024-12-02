@@ -1,5 +1,8 @@
 # Adds source package repos
 ---
 
-- include_tasks: ubuntu2404.yml
+- include_tasks: apt_sources_list_d.yml
   when: ubuntu2404_based|bool
+
+- include_tasks: apt_sources_list.yml
+  when: "{{ ((not ubuntu2404_based|bool) and (debian_based|bool)) }}"
