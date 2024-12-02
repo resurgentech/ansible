@@ -1,0 +1,5 @@
+# Adds source package repos
+---
+
+- include_tasks: ubuntu2404.yml
+  when: ubuntu2404_based|bool

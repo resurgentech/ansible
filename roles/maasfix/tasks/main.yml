@@ -1,0 +1,5 @@
+# Clean up apt sources wierdness from MAAS stuff
+---
+
+- include_tasks: ubuntu2404.yml
+  when: ubuntu2404_based|bool

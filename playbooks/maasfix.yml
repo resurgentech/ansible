@@ -1,0 +1,8 @@
+---
+
+# DESCRIPTION=Fixes weird issues w/ MAAS Ubuntu 24.04
+- name: Fixes MAAS Ubuntu 24.04
+  hosts: all
+  roles:
+    - upgrade
+    - maasfix

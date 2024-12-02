@@ -1,0 +1,7 @@
+---
+
+# DESCRIPTION=Upgrade installed OS packages
+- name: Fixes MAAS Ubuntu 24.04
+  hosts: all
+  roles:
+    - upgrade

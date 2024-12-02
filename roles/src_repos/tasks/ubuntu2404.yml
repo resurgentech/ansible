@@ -1,0 +1,29 @@
+---
+
+- name: Check if ubuntu-src.sources exists
+  shell: |
+    cat /etc/apt/sources.list.d/ubuntu.sources | \
+    sed 's/Types\: deb$/Types\: deb-src/g' \
+    > /etc/apt/sources.list.d/ubuntu-src2.sources;
+    AAA=$(diff /etc/apt/sources.list.d/ubuntu-src2.sources /etc/apt/sources.list.d/ubuntu-src.sources 2>&1);
+    rm /etc/apt/sources.list.d/ubuntu-src2.sources
+    if [ ! -z "$AAA" ]; then
+      exit 1
+    fi
+  changed_when: false
+  register: ubuntu_src_sources
+
+- name: Check if ubuntu-src.sources contains the correct data
+  shell: |
+    cat /etc/apt/sources.list.d/ubuntu.sources | \
+    sed 's/Types\: deb$/Types\: deb-src/g' \
+    > /etc/apt/sources.list.d/ubuntu-src.sources
+  register: ubuntu_src_updated
+  when: ubuntu_src_sources.rc  != 0
+
+- name: Update apt package cache again
+  apt:
+    update_cache: yes
+    cache_valid_time: 1
+  become: true
+  when: ubuntu_src_updated.changed

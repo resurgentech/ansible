@@ -6,4 +6,5 @@
   remote_user: root
   roles:
     - dev_common
+    - src_repos
     - kernel_build

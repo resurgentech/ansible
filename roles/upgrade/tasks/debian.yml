@@ -1,0 +1,13 @@
+---
+
+- name: Update apt package cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 1
+  become: true
+
+- name: Upgrade all packages
+  apt:
+    upgrade: yes
+    force_apt_get: yes
+  become: true
