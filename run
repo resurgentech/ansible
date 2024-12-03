@@ -65,6 +65,8 @@ run_ansible() {
   CMD+="ANSIBLE_HOST_KEY_CHECKING=False "
   CMD+="ANSIBLE_ROLES_PATH=${PROJECT_DIR}/roles:~/.ansible/roles:/etc/ansible/roles "
   CMD+="ansible-playbook "
+  # Undocumented hacks
+  CMD+="$ANSIBLE_HACKS "
   CMD+="$LOCALCONNECTION "
   CMD+="--inventory $inventoryfile $playbookfile $ansibleparams"
   run_command "$CMD"
