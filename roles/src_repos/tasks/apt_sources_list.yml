@@ -4,7 +4,7 @@
 - name: Turn on source repos to /etc/apt/sources.list
   shell: |
     cp /etc/apt/sources.list /etc/apt/sources.list.ansible
-    if [ -z "$( cat /etc/apt/source.list.ansible | grep deb-src )" ]; then
+    if [ -z "$( cat /etc/apt/sources.list | grep deb-src )" ]; then
       sed -Ei 's/^deb /deb-src /' /etc/apt/sources.list.ansible-src
       cat /etc/apt/sources.list.ansible-src | grep deb-src >> /etc/apt/sources.list.ansible
       rm /etc/apt/sources.list.ansible-src
@@ -14,8 +14,9 @@
     fi
     if [ -z "$(diff /etc/apt/sources.list /etc/apt/sources.list.ansible)" ]; then
       rm /etc/apt/sources.list.ansible
-      echo "NO_CHANGE_TO_SOURCES_LIST"
+    else
+      mv /etc/apt/sources.list.ansible /etc/apt/sources.list
+      echo "SOURCES_LIST_CHANGED"
     fi
-    mv /etc/apt/sources.list.ansible /etc/apt/sources.list
   register: shell_output
-  changed_when: "NO_CHANGE_TO_SOURCES_LIST in shell_output.stdout"
+  changed_when: "'SOURCES_LIST_CHANGED' in shell_output.stdout"

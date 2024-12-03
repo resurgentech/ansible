@@ -154,7 +154,7 @@ case "${COMMANDS[0]}" in
     fi
     if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
       echo "Upgrading before running playbook"
-      run_ansible "${COMMANDS[1]}" "./playbooks/upgrade.yml" "${PARAMS[@]}"
+      run_ansible "${COMMANDS[2]}" "./playbooks/upgrade.yml" "${PARAMS[@]}"
     fi
     echo "Run Playbook"
     run_ansible "${COMMANDS[2]}" "${COMMANDS[1]}" "${PARAMS[@]}"

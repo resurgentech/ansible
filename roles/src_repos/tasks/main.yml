@@ -5,4 +5,4 @@
   when: ubuntu2404_based|bool
 
 - include_tasks: apt_sources_list.yml
-  when: "{{ ((not ubuntu2404_based|bool) and (debian_based|bool)) }}"
+  when: "((not ubuntu2404_based|bool) and (debian_based|bool))"
