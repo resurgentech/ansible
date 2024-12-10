@@ -1,0 +1,8 @@
+---
+# Create btrfs mounts
+
+- include_tasks: ubuntu2404.yml
+  when: ubuntu2404_based|bool
+
+- include_tasks: btrfs_mount.yml
+  loop: "{{ btrfs_volumes }}"

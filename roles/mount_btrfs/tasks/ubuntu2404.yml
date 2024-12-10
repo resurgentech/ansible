@@ -1,0 +1,9 @@
+---
+
+- name: Ensure Btrfs tools are installed
+  apt:
+    name: 
+      - btrfs-progs
+      - hdparm
+      - smartmontools
+    state: present

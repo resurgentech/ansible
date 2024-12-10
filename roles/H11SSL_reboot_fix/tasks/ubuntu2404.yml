@@ -13,4 +13,4 @@
     backup: yes
   notify:
     - Update Grub
-  when: reboot_efi_check.stdout == "1"
+  when: reboot_efi_check.stdout == "0"
