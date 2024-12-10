@@ -22,12 +22,12 @@
     path: /etc/tigervnc/vncserver.users
     line: ":{{ index + 2 }}={{ item }}"
 
-- name: Open vncserver ports with ufw
-  ufw:
-    rule: allow
-    port: "590{{ index + 2 }}"
-    proto: tcp
-  when: ubuntu2404_based|bool
+# - name: Open vncserver ports with ufw
+#   ufw:
+#     rule: allow
+#     port: "590{{ index + 2 }}"
+#     proto: tcp
+#   when: ubuntu2404_based|bool
 
 - name: Open vncserver ports with firewall
   firewalld:

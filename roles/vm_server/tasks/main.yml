@@ -1,9 +1,10 @@
 ---
-
-- include_tasks: debian.yml
+- name: vm_server_debian
+  include_tasks: debian.yml
   when: debian_based|bool
 
-- include_tasks: redhat.yml
+- name: vm_server_redhat
+  include_tasks: redhat.yml
   when: redhat_based|bool
 
 - include_tasks: vagrant_per_user.yml

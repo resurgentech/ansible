@@ -1,10 +1,12 @@
 ---
 # Sets up tigervnc
 
-- include_tasks: debian.yml
+- name: tigervnc_debian
+  include_tasks: debian.yml
   when: debian_based|bool
 
-- include_tasks: redhat.yml
+- name: tigervnc_redhat
+  include_tasks: redhat.yml
   when: redhat_based|bool
 
 - include_tasks: per_user.yml

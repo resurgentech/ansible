@@ -1,10 +1,12 @@
 ---
 # Installing Telegraf client
 
-- include_tasks: debian.yml
+- name: telegraf_debian
+  include_tasks: debian.yml
   when: debian_based|bool
 
-- include_tasks: redhat.yml
+- name: telegraf_redhat
+  include_tasks: redhat.yml
   when: redhat_based|bool
 
 - name: Configure Telegraf config
