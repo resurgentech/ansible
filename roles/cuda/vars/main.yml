@@ -19,6 +19,7 @@ cuda_deb_files:
   - nvidia-gds
   - cuda-tools-12-5
   - cuda-libraries-dev-12-5
+  - libcudnn9-cuda-12
   - nvtop
 
 cuda_install_path: /usr/local/cuda-12.5
