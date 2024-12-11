@@ -1,15 +1,10 @@
 ---
 
 - name: Check for existing filesystems on device {{ item.devices }}
-  command: lsblk -f --noheadings --output FSTYPE {{ item.devices }}
+  command: lsblk -f --noheadings --output FSTYPE {{ item.devices | join(' ')  }}
+  failed_when: false
+  changed_when: false
   register: disk_check
-  #failed_when: disk_check.stdout | length > 0
-
-- name: Check for existing mount point {{ item.mount_point }}
-  stat:
-    path: "{{ item.mount_point }}"
-  register: mount_point_check
-  #failed_when: mount_point_check.stat.exists
 
 - name: Create Btrfs filesystem {{ item.mount_point }}
   command: >
@@ -22,31 +17,19 @@
     path: "{{ item.mount_point }}"
     state: directory
 
-# - name: Set permissions for mount point {{ item.mount_point }}
-#   file:
-#     path: "{{ item.mount_point }}"
-#     state: directory
-#     mode: '0777'
-
-# - name: Mount Btrfs filesystem  {{ item.mount_point }}
-#   mount:
-#     path: "{{ item.mount_point }}"
-#     src: "{{ item.devices[0] }}"
-#     fstype: btrfs
-#     opts: defaults
-#     state: mounted
-
 - name: Add to /etc/fstab {{ item.mount_point }}
   lineinfile:
     path: /etc/fstab
     line: "{{ item.devices[0] }} {{ item.mount_point }} btrfs defaults 0 0"
     state: present
   register: add_to_fstab
-  notify: Mount all filesystems
+
+- name: Mount all filesystems
+  command: mount -a
+  when: add_to_fstab.changed
 
 - name: Set permissions for mount point {{ item.mount_point }}
   file:
     path: "{{ item.mount_point }}"
     state: directory
     mode: '0777'
-

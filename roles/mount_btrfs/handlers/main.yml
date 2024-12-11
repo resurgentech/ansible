@@ -1,4 +1,0 @@
----
-
-- name: Mount all filesystems
-  command: mount -a
