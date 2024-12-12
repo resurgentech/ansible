@@ -48,3 +48,6 @@
   apt:
     name: packer
     state: present
+
+- include_tasks: per_user.yml
+  loop: "{{ admin_users }}"
