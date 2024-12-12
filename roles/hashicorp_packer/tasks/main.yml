@@ -6,20 +6,18 @@
   register: hashicorp_gpg
 
 - name: Download HashiCorp GPG key
-  get_url:
-    url: https://apt.releases.hashicorp.com/gpg
-    dest: /tmp/hashicorp.asc
-    mode: '0644'
+  shell: curl --output /tmp/hashicorp.asc https://apt.releases.hashicorp.com/gpg
   when: not hashicorp_gpg.stat.exists
 
 - name: Convert HashiCorp GPG key to binary format
-  command: gpg --dearmor /tmp/hashicorp.asc
-  args:
-    creates: /tmp/hashicorp.gpg
-  when: not hashicorp_gpg.stat.exists
+  shell: |
+    rm -f /tmp/hashicorp.asc.gpg;
+    gpg --dearmor /tmp/hashicorp.asc
+  when: not hashicorp_gpg.stat.exists|bool
 
 - name: Move the binary HashiCorp GPG key to /etc/apt/trusted.gpg.d/
   copy:
+    remote_src: true
     src: /tmp/hashicorp.asc.gpg
     dest: /etc/apt/trusted.gpg.d/hashicorp.gpg
     mode: '0644'
@@ -27,13 +25,16 @@
 
 - name: Clean up temporary HashiCorp GPG files
   file:
-    path: /tmp/hashicorp.asc
+    path:
+     - /tmp/hashicorp.asc
+     - /tmp/hashicorp.asc.gpg
     state: absent
 
 - name: Add HashiCorp APT repository
   lineinfile:
     path: /etc/apt/sources.list.d/hashicorp.list
     line: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_lsb.codename }} main"
+    create: true
     state: present
   register: hashicorp_source_list
 
