@@ -34,6 +34,7 @@
       - zstd
       - diffstat
       - sshpass
+      - btop
     state: present
 
 - name: Ubuntu2404 python deps
