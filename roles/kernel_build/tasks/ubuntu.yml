@@ -20,6 +20,7 @@
       - python3-jinja2
       - python3-yaml
       - python3-git
+      - python3-lxml
       - clang
       - llvm
     state: present

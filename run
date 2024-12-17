@@ -25,7 +25,6 @@ VALID_FLAGS=("--help:Show help for this script"
              "--ask-pass:Ask for ssh password, instead of ssh keys"
              "--ask-become-pass:Ask for sudo password"
              "--check:Contact the hosts but don't change anything"
-             "--localhost:Run on localhost"
              "--upgrade:Update and upgrade the target system before running"
              "--dryrun:Dryrun.  Don't actually run the commands"
              "--debug:Extra debug prints")
@@ -86,13 +85,13 @@ case "${COMMANDS[0]}" in
   basic_install)
     echo "NOTE: 'BECOME password' below refers to the sudo password for '${USER}'"
     echo ""
-    if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
-      echo "Upgrading this machine."
-      run_ansible "inventories/labtwo.yml" "./playbooks/upgrade.yml" "${PARAMS[@]}"
-    fi
-    echo "Installing development tools to this machine."
     cd ${PROJECT_DIR}/
     LOCALCONNECTION="--connection=local"
+    if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
+      echo "Upgrading this machine."
+      run_ansible "inventories/localhost.yml" "./playbooks/upgrade.yml" "${PARAMS[@]}"
+    fi
+    echo "Installing development tools to this machine."
     run_ansible "inventories/localhost.yml" "./playbooks/dev_desktop.yml" "--ask-become-pass  --extra-vars=ansible_user=$USER"
     ;;
   init)
@@ -125,18 +124,22 @@ case "${COMMANDS[0]}" in
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
+    INVENTORY_FILE="${COMMANDS[2]}"
+    if [ "$INVENTORY_FILE" == "inventories/localhost.yml" ]; then
+      LOCALCONNECTION="--connection=local"
+    fi
     case "${COMMANDS[1]}" in
       password)
         echo "Setting user password on targets"
-        run_ansible "${COMMANDS[2]}" "password.yml" "${PARAMS[@]}"
+        run_ansible "$INVENTORY_FILE" "password.yml" "${PARAMS[@]}"
         ;;
       keys)
         echo "Pushing local SSH keys to targets"
-        run_ansible "${COMMANDS[2]}" "keys.yml" "${PARAMS[@]}"
+        run_ansible "$INVENTORY_FILE" "keys.yml" "${PARAMS[@]}"
         ;;
       vnc)
         echo "Configuring vnc for user"
-        run_ansible "${COMMANDS[2]}" "vnc.yml" "${PARAMS[@]}"
+        run_ansible "$INVENTORY_FILE" "vnc.yml" "${PARAMS[@]}"
         ;;
       *)
         show_usage
@@ -158,8 +161,12 @@ case "${COMMANDS[0]}" in
       echo "Upgrading before running playbook"
       run_ansible "${COMMANDS[2]}" "./playbooks/upgrade.yml" "${PARAMS[@]}"
     fi
+    INVENTORY_FILE="${COMMANDS[2]}"
+    if [ "$INVENTORY_FILE" == "inventories/localhost.yml" ]; then
+      LOCALCONNECTION="--connection=local"
+    fi
     echo "Run Playbook"
-    run_ansible "${COMMANDS[2]}" "${COMMANDS[1]}" "${PARAMS[@]}"
+    run_ansible "$INVENTORY_FILE" "${COMMANDS[1]}" "${PARAMS[@]}"
     ;;
   *)
     show_usage

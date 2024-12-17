@@ -33,6 +33,7 @@
       - rpm
       - zstd
       - diffstat
+      - sshpass
     state: present
 
 - name: Ubuntu2404 python deps

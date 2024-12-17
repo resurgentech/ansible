@@ -1,0 +1,51 @@
+---
+# DESCRIPTION: Install MinIO client
+
+# set var minio_client_force_update: true to force update, otherwise it just checks if it is installed
+
+- name: Check if MinIO client is installed
+  stat:
+    path: /usr/local/bin/mc
+  register: minio_client_installed
+
+- name: Fetch MinIO SHA256 hash online
+  uri:
+    url: "https://dl.min.io/client/mc/release/linux-amd64/mc.sha256sum"
+    return_content: true
+  register: online_minio_sha
+  when: minio_client_installed.stat.exists
+
+- name: Calculate local MinIO SHA256 hash
+  command: sha256sum /usr/local/bin/mc
+  register: local_minio_sha
+  changed_when: false
+  when: minio_client_installed.stat.exists
+
+- name: Compare MinIO client versions
+  set_fact:
+    minio_client_versions_diff: "{{ (local_minio_sha.stdout.split()[0] != online_minio_sha.content.split()[0]) }}"
+  changed_when: minio_client_versions_diff
+  when: minio_client_installed.stat.exists and online_minio_sha.content is defined and (minio_client_force_update | default(false) | bool)
+
+- name: MinIO client upgrade decision
+  set_fact:
+    minio_client_do_upgrade: "{{ (minio_client_force_update | default(false) | bool) and minio_client_versions_diff | default(false) }}"
+  changed_when: minio_client_do_upgrade
+
+# - name: Debug checks
+#   debug:
+#     msg:
+#       - "Local SHA: {{ local_minio_sha.stdout.split()[0] }}"
+#       - "Online SHA: {{ online_minio_sha.content.split()[0] }}"
+#       - "versions diff: {{ minio_client_versions_diff | default(false) }}"
+#       - "minio_client_force_update: {{ minio_client_force_update | default(false) }}"
+#       - "minio_client_do_upgrade: {{ minio_client_do_upgrade }}"
+#   when: minio_client_installed.stat.exists and online_minio_sha.content is defined
+
+- name: Download MinIO client
+  get_url:
+    url: https://dl.min.io/client/mc/release/linux-amd64/mc
+    dest: "/usr/local/bin/mc"
+    mode: '0755'
+    force: true
+  when: not minio_client_installed.stat.exists or minio_client_do_upgrade

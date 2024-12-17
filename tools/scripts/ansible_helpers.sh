@@ -194,9 +194,7 @@ make_ansible_params() {
   # list of flags not to pass to ansible
   nonansible_flags=("--dryrun" "--upgrade")
   for flag in "${FLAGS[@]}"; do
-    if [ "$flag" == "--localhost" ]; then
-      LOCALCONNECTION="--connection=local"
-    elif [ "$flag" == "--debug" ]; then
+    if [ "$flag" == "--debug" ]; then
       DEBUG="true"
     elif [[ " ${nonansible_flags[@]} " =~ " ${flag} " ]]; then
       # Skip non-ansible flags

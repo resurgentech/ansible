@@ -3,5 +3,8 @@
 # DESCRIPTION=Upgrade installed OS packages
 - name: Upgrade installed OS packages
   hosts: all
+  vars:
+    minio_client_force_update: true
   roles:
     - upgrade
+    - minio_client
