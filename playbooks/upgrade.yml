@@ -1,6 +1,6 @@
 ---
-
 # DESCRIPTION=Upgrade installed OS packages
+
 - name: Upgrade installed OS packages
   hosts: all
   vars:
