@@ -1,6 +1,6 @@
 ---
-
 # DESCRIPTION=Set up vnc instance for a user
+
 - name: Set up vnc instance for a user
   hosts: all
   vars_prompt: # Prompt for variables

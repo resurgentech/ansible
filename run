@@ -124,8 +124,8 @@ case "${COMMANDS[0]}" in
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
-    INVENTORY_FILE="${COMMANDS[2]}"
-    if [ "$INVENTORY_FILE" == "inventories/localhost.yml" ]; then
+    INVENTORY_FILE="${PROJECT_DIR}/${COMMANDS[2]}"
+    if [ "$INVENTORY_FILE" == "${PROJECT_DIR}/inventories/localhost.yml" ]; then
       LOCALCONNECTION="--connection=local"
     fi
     case "${COMMANDS[1]}" in

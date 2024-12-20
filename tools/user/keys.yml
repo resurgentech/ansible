@@ -1,6 +1,6 @@
 ---
-
 # DESCRIPTION=Set up ssh keys for passwordless access
+
 - name: Set up ssh keys for passwordless access
   hosts: all
   vars_prompt:

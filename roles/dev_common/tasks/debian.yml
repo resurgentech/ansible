@@ -30,7 +30,6 @@
       - openssl
       - rsync
       - xmlto
-      - rpm
       - zstd
       - diffstat
       - sshpass

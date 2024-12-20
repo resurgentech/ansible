@@ -1,6 +1,5 @@
 ---
 
-
 - name: "Find port"
   shell: |
     VNCUSER=$(grep ^: /etc/tigervnc/vncserver.users | grep {{ my_user }}$);
