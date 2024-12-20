@@ -20,7 +20,8 @@ VALID_COMMANDS=("basic_install:Configures this machine as a development workstat
                 "init:Installs ansible tool to the local machine:0")
 VALID_SUBCOMMANDS=("user:password:Set user unix password"
                    "user:keys:Set up ssh keys for passwordless access"
-                   "user:vnc:Set up vnc instance for a user")
+                   "user:vnc:Set up vnc instance for a user"
+                   "user:p10kconfig:Copying local p10k config to user on targets")
 VALID_FLAGS=("--help:Show help for this script"
              "--ask-pass:Ask for ssh password, instead of ssh keys"
              "--ask-become-pass:Ask for sudo password"
@@ -140,6 +141,10 @@ case "${COMMANDS[0]}" in
       vnc)
         echo "Configuring vnc for user"
         run_ansible "$INVENTORY_FILE" "vnc.yml" "${PARAMS[@]}"
+        ;;
+      p10kconfig)
+        echo "Copying local p10k config to user on targets"
+        run_ansible "$INVENTORY_FILE" "p10kconfig.yml" "${PARAMS[@]}"
         ;;
       *)
         show_usage

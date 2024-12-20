@@ -1,0 +1,30 @@
+---
+# DESCRIPTION=Copy powerlevel10k config for oh-my-zsh
+
+- name: Copy powerlevel10k config for oh-my-zsh
+  hosts: all
+  vars_prompt:
+    - name: my_user
+      prompt: Enter user to update
+      unsafe: yes
+      private: no
+  tasks:
+  - name: "Extracting config from local machine"
+    local_action:
+      module: shell
+      cmd: |
+        cat {{ my_user_home.stdout }}/.p10k.zsh
+    become: no
+    changed_when: false
+    register: p10k_config
+  - name: Get users home directory
+    shell: "getent passwd {{ my_user }} | cut -d: -f6"
+    register: my_user_home
+  - name: Write p10k config to machines
+    copy:
+      content: "{{ p10k_config.stdout }}"
+      dest: "{{ my_user_home.stdout }}/.p10k.zsh"
+      mode: 0664
+      user: "{{ my_user }}"
+      group: "{{ my_user }}"
+

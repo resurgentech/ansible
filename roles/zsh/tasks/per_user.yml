@@ -1,0 +1,45 @@
+---
+
+- name: "Get current shell for user {{ item }}"
+  shell: "getent passwd {{ item }} | cut -d: -f7"
+  register: current_shell
+  changed_when: false
+
+- name: "Get home directory for user {{ item }}"
+  shell: "getent passwd {{ item }} | cut -d: -f6"
+  register: users_home_dir
+  changed_when: false
+
+- name: Change default shell to Zsh
+  user:
+    name: "{{ item }}"
+    shell: /usr/bin/zsh
+  when: current_shell.stdout != "/usr/bin/zsh"
+
+- name: Download and install Oh My Zsh
+  shell: |
+    curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -o /tmp/ohmyzsh_install.sh;
+    chmod +x /tmp/ohmyzsh_install.sh;
+    /tmp/ohmyzsh_install.sh --unattended
+  args:
+    creates: "{{ users_home_dir.stdout }}/.oh-my-zsh"
+
+- name: Install powerlevel10k theme
+  shell: |
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git {{ users_home_dir.stdout }}/.oh-my-zsh/custom/themes/powerlevel10k
+  args:
+    creates: "{{ users_home_dir.stdout }}/.oh-my-zsh/custom/themes/powerlevel10k"
+
+- name: Ensure ZSH_THEME is set to powerlevel10k
+  lineinfile:
+    path: "{{ users_home_dir.stdout }}/.zshrc"
+    regexp: '^ZSH_THEME=".*"'
+    line: 'ZSH_THEME="powerlevel10k/powerlevel10k"'
+    create: yes
+
+- name: Disable configuration wizard for powerlevel10k
+  lineinfile:
+    path: "{{ users_home_dir.stdout }}/.zshrc"
+    regexp: '^export POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=.*'
+    line: 'export POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true'
+    create: yes

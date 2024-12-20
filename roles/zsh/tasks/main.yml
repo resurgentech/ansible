@@ -1,0 +1,12 @@
+---
+# DESCRIPTION: Install oh_my_zsh
+
+- name: Install Zsh
+  apt:
+    name:
+      - zsh
+    state: present
+    update_cache: yes
+
+- include_tasks: per_user.yml
+  loop: "{{ admin_users }}"
