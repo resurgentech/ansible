@@ -27,4 +27,4 @@
       dest: "{{ my_user_home.stdout }}/.p10k.zsh"
       owner: "{{ my_user }}"
       group: "{{ my_user }}"
-      mode: 664
+      mode: '0664'
