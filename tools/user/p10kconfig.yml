@@ -9,6 +9,10 @@
       unsafe: yes
       private: no
   tasks:
+  - name: Get users home directory
+    shell: "getent passwd {{ my_user }} | cut -d: -f6"
+    register: my_user_home
+    changed_when: false
   - name: "Extracting config from local machine"
     local_action:
       module: shell
@@ -17,9 +21,6 @@
     become: no
     changed_when: false
     register: p10k_config
-  - name: Get users home directory
-    shell: "getent passwd {{ my_user }} | cut -d: -f6"
-    register: my_user_home
   - name: Write p10k config to machines
     copy:
       content: "{{ p10k_config.stdout }}"
