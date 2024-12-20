@@ -25,7 +25,6 @@
     copy:
       content: "{{ p10k_config.stdout }}"
       dest: "{{ my_user_home.stdout }}/.p10k.zsh"
-      mode: 0664
-      user: "{{ my_user }}"
+      owner: "{{ my_user }}"
       group: "{{ my_user }}"
-
+      mode: 664
