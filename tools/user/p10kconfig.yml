@@ -13,11 +13,26 @@
     shell: "getent passwd {{ my_user }} | cut -d: -f6"
     register: my_user_home
     changed_when: false
-  - name: "Extracting config from local machine"
+  - name: "Extracting .zshrc from local machine"
     local_action:
       module: shell
       cmd: |
-        cat {{ my_user_home.stdout }}/.p10k.zsh
+        cat ~/.zshrc
+    become: no
+    changed_when: false
+    register: zshrc_config
+  - name: Write zshrc config to machines
+    copy:
+      content: "{{ zshrc_config.stdout }}"
+      dest: "{{ my_user_home.stdout }}/.zshrc"
+      owner: "{{ my_user }}"
+      group: "{{ my_user }}"
+      mode: '0664'
+  - name: "Extracting p10k config from local machine"
+    local_action:
+      module: shell
+      cmd: |
+        cat ~/.p10k.zsh
     become: no
     changed_when: false
     register: p10k_config
