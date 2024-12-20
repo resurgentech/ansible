@@ -8,5 +8,11 @@
     state: present
     update_cache: yes
 
+- name: Add source /etc/profile to /etc/zsh/zprofile
+  lineinfile:
+    path: /etc/zsh/zprofile
+    line: "emulate sh -c 'source /etc/profile'"
+    state: present
+
 - include_tasks: per_user.yml
   loop: "{{ admin_users }}"
