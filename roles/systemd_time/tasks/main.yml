@@ -5,7 +5,6 @@
   command: timedatectl show --property=Timezone --value
   register: current_timezone
   changed_when: false
-  when: current_timezone.stdout != iana_tz
 
 - name: "Ensure the timezone is set to {{ iana_tz }}"
   shell: timedatectl set-timezone {{ iana_tz }}
