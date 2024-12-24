@@ -1,0 +1,7 @@
+---
+# DESCRIPTION: Set the default Ubuntu ntp and time stuff
+
+- name: "Ensure the timezone is set to {{ iana_tz }}"
+  shell: timedatectl set-timezone {{ iana_tz }}
+
+#TODO set ntp?
