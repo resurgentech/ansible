@@ -1,0 +1,5 @@
+# Fix 2min stall on Ubuntu systems with systemd-networkd
+---
+
+- include_tasks: ubuntu2404.yml
+  when: ubuntu2404_based|bool

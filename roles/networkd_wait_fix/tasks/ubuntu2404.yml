@@ -1,0 +1,9 @@
+---
+
+- name: Disable and mask systemd-networkd-wait-online.service
+  systemd:
+    name: systemd-networkd-wait-online.service
+    enabled: false
+    masked: true
+    state: stopped
+  notify: Reload systemd daemon

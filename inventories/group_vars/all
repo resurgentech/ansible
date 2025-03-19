@@ -16,6 +16,9 @@ admin_users: ["{{ ansible_user }}"]
 ## vnc users
 vnc_users: ["{{ ansible_user }}"]
 
+# these users have the UI tools installed
+full_users: ["{{ ansible_user }}"]
+
 # This is a hashed (using `openssl passwd -6`) password for all newly created admin users.
 # Must be changed using `./run user password`
 default_password: ""
