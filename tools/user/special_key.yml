@@ -1,0 +1,21 @@
+---
+# DESCRIPTION=Set up ssh keys for passwordless access
+
+- name: Set up ssh keys for passwordless access
+  hosts: all
+  vars_prompt:
+    - name: my_user
+      prompt: Enter username to update keys
+      unsafe: yes
+      private: no
+    - name: my_key
+      prompt: Enter public ssh key to add
+      private: yes
+  tasks:
+  - name: Push user ed25519 pub key to machines
+    authorized_key:
+      user: "{{ my_user }}"
+      state: present
+      key: "{{ my_key }}"
+    when: my_user != "root"
+    ignore_errors: yes
