@@ -1,0 +1,47 @@
+---
+- name: Generate xterm-ghostty terminfo locally
+  ansible.builtin.shell: infocmp -x xterm-ghostty > /tmp/xterm-ghostty.terminfo
+  delegate_to: localhost
+  register: terminfo_gen
+  changed_when: false
+  failed_when: terminfo_gen.rc != 0
+
+- name: Check and export existing xterm-ghostty terminfo on target
+  ansible.builtin.shell: infocmp -x xterm-ghostty > /tmp/xterm-ghostty-target.terminfo
+  register: target_terminfo_check
+  ignore_errors: yes
+  changed_when: false
+
+- name: Copy xterm-ghostty terminfo to target
+  ansible.builtin.copy:
+    src: /tmp/xterm-ghostty.terminfo
+    dest: /tmp/xterm-ghostty.terminfo
+  register: terminfo_copy
+  when: target_terminfo_check.rc != 0  # Only copy if terminfo is missing
+
+- name: Compare local and target terminfo files
+  ansible.builtin.command: diff /tmp/xterm-ghostty.terminfo /tmp/xterm-ghostty-target.terminfo
+  register: terminfo_diff
+  failed_when: false
+  changed_when: terminfo_diff.rc == 1  # rc == 1 means files differ
+  when: target_terminfo_check.rc == 0  # Only compare if terminfo exists
+
+- name: Install xterm-ghostty terminfo on target if changed
+  ansible.builtin.shell: tic -x /tmp/xterm-ghostty.terminfo
+  when: target_terminfo_check.rc != 0 or terminfo_diff.rc == 1
+  register: terminfo_install
+
+- name: Clean up temporary files on target
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/xterm-ghostty.terminfo
+    - /tmp/xterm-ghostty-target.terminfo
+  when: terminfo_install.changed | default(false)  # Only clean if installed
+
+- name: Clean up local terminfo file
+  ansible.builtin.file:
+    path: /tmp/xterm-ghostty.terminfo
+    state: absent
+  delegate_to: localhost
