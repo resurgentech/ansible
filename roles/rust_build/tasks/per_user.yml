@@ -66,3 +66,23 @@
   become: yes
   become_user: "{{ item }}"
   when: cargorpm_check.rc != 0
+
+- name: Install cargo-generate-rpm
+  shell: . ~/.cargo/env && cargo install cargo-generate-rpm
+  become: yes
+  become_user: "{{ item }}"
+  when: cargorpm_check.rc != 0
+
+- name: Check if x86_64-unknown-linux-musl is installed for '{{ item }}'
+  shell: . ~/.cargo/env && rustup target list | grep x86_64-unknown-linux-musl | grep installed
+  become: yes
+  become_user: "{{ item }}"
+  register: musl_check
+  changed_when: false
+  ignore_errors: yes
+
+- name: Install rustup target x86_64-unknown-linux-musl for '{{ item }}'
+  shell: . ~/.cargo/env && rustup target add x86_64-unknown-linux-musl
+  become: yes
+  become_user: "{{ item }}"
+  when: musl_check.rc != 0

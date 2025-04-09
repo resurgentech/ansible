@@ -18,6 +18,7 @@
 
 - name: "Download and install Oh My Zsh for user {{ item }}"
   shell: |
+    sudo rm -rf /tmp/ohmyzsh_install.sh;
     curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -o /tmp/ohmyzsh_install.sh;
     chmod +x /tmp/ohmyzsh_install.sh;
     /tmp/ohmyzsh_install.sh --unattended

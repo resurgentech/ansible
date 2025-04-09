@@ -34,6 +34,7 @@
       - diffstat
       - sshpass
       - btop
+      - acl
     state: present
 
 - name: Ubuntu2404 python deps

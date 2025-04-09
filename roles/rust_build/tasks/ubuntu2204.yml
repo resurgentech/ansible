@@ -6,4 +6,5 @@
       - libssl-dev
       - pkg-config
       - clang
+      - musl-tools
     state: present
