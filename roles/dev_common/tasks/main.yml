@@ -20,3 +20,6 @@
       - GitPython
       - pyaml
   when: not ubuntu2404_based|bool
+
+- name: Installing uv for python
+  shell: curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
