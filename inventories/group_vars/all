@@ -36,3 +36,8 @@ nvm_shell_init_file: /etc/bash.bashrc
 
 ## Go language SDK version number
 golang_version: '1.23.8'
+
+## Rust toolchain versions
+rustup_version: "1.28.2"
+cargo_version: "1.87.0"
+rustc_version: "1.87.0"
