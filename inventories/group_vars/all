@@ -35,4 +35,4 @@ nvm_install_path: /var/lib/nvm
 nvm_shell_init_file: /etc/bash.bashrc
 
 ## Go language SDK version number
-golang_version: '1.22.5'
+golang_version: '1.23.8'
