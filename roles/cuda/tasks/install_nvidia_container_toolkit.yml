@@ -36,7 +36,7 @@
 
 - name: Install nvidia container toolkit binaries
   apt:
-    name: nvidia-container-toolkit
+    name: "{{ nvidia_container_toolkit_packages }}"
     update_cache: yes
     state: present
   notify: restart docker daemon
