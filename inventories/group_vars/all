@@ -29,15 +29,15 @@ minikube_binary: /usr/local/bin/minikube
 kubectl_binary: /usr/local/bin/kubectl
 
 ## nvm/node/npm
-nvm_version: 0.39.7
+nvm_version: 0.40.4
 nvm_node_version: lts
 nvm_install_path: /var/lib/nvm
 nvm_shell_init_file: /etc/bash.bashrc
 
 ## Go language SDK version number
-golang_version: '1.23.8'
+golang_version: '1.26.1'
 
 ## Rust toolchain versions
-rustup_version: "1.28.2"
-cargo_version: "1.87.0"
-rustc_version: "1.87.0"
+rustup_version: "1.29.0"
+cargo_version: "1.94.0"
+rustc_version: "1.94.0"
