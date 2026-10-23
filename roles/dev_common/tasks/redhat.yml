@@ -4,6 +4,8 @@
     name:
       - "@Development Tools"
       - cmake
+      - bison
+      - flex
       - git
       - rsync
       - gcc

@@ -35,6 +35,7 @@
       - sshpass
       - btop
       - acl
+      - curl
     state: present
 
 - name: Ubuntu2404 python deps

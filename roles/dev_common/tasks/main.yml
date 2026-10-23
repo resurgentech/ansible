@@ -32,4 +32,6 @@
   when: not (debian_based|bool or arch_based|bool)
 
 - name: Installing uv for python
-  shell: curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
+  shell: set -o pipefail && curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
+  args:
+    executable: /bin/bash
