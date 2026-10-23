@@ -162,13 +162,13 @@ case "${COMMANDS[0]}" in
       echo "NOTE: 'BECOME password' below refers to the sudo password for '${SELECTED_USER}'"
       echo ""
     fi
-    if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
-      echo "Upgrading before running playbook"
-      run_ansible "${COMMANDS[2]}" "./playbooks/upgrade.yml" "${PARAMS[@]}"
-    fi
     INVENTORY_FILE="${COMMANDS[2]}"
     if [ "$INVENTORY_FILE" == "inventories/localhost.yml" ]; then
       LOCALCONNECTION="--connection=local"
+    fi
+    if [ "$(flags_has_flag '--upgrade')" == "true" ]; then
+      echo "Upgrading before running playbook"
+      run_ansible "$INVENTORY_FILE" "./playbooks/upgrade.yml" "${PARAMS[@]}"
     fi
     echo "Run Playbook"
     run_ansible "$INVENTORY_FILE" "${COMMANDS[1]}" "${PARAMS[@]}"

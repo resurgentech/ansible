@@ -20,3 +20,11 @@
 - name: kernel_build_amazonlinux2
   include_tasks: amazonlinux2.yml
   when: amazonlinux2_based|bool
+
+- name: kernel_build_amazonlinux2023
+  include_tasks: amazonlinux2023.yml
+  when: amazonlinux2023_based|bool
+
+- name: kernel_build_archlinux
+  include_tasks: archlinux.yml
+  when: arch_based|bool

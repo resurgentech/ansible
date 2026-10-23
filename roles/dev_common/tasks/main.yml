@@ -13,13 +13,23 @@
   include_tasks: amazonlinux2.yml
   when: amazonlinux2_based|bool
 
+- name: dev_common_amazonlinux2023
+  include_tasks: amazonlinux2023.yml
+  when: amazonlinux2023_based|bool
+
+- name: dev_common_archlinux
+  include_tasks: archlinux.yml
+  when: arch_based|bool
+
+# Debian and Arch python is externally managed (PEP 668), their tasks install
+# these as distro packages instead
 - name: Various python dependancies
   pip:
     name:
       - jinja2
       - GitPython
       - pyaml
-  when: not ubuntu2404_based|bool
+  when: not (debian_based|bool or arch_based|bool)
 
 - name: Installing uv for python
   shell: curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
