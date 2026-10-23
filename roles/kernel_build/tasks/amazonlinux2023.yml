@@ -22,12 +22,10 @@
       - perl-Carp
       - "perl(ExtUtils::Embed)"
       - python3-sphinx
-      - clang
       - dwarves
       - libbpf-devel
       - libcap-ng-devel
       - libmnl-devel
-      - llvm
       - bpftool
     state: present
 

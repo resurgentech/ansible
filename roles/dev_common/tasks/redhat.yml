@@ -4,6 +4,9 @@
     name:
       - "@Development Tools"
       - cmake
+      - clang
+      - llvm
+      - lld
       - bison
       - flex
       - git

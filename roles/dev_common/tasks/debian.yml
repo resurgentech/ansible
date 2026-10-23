@@ -9,6 +9,9 @@
     name:
       - build-essential
       - cmake
+      - clang
+      - llvm
+      - lld
       - git
       - rsync
       - gcc

@@ -30,14 +30,12 @@
       - perl-Carp
       - "perl(ExtUtils::Embed)"
       - python3-sphinx
-      - clang
       - dwarves
       - kabi-dw
       - libbabeltrace-devel
       - libbpf-devel
       - libcap-ng-devel
       - libmnl-devel
-      - llvm
       - bpftool
     state: present
 
