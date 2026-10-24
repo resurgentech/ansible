@@ -1,8 +1,8 @@
 ---
-- name: Ubuntu2204 rust build Dependancies
+- name: Debian rust build Dependancies
   apt:
     name:
-      - libstdc++-12-dev
+      - g++
       - libssl-dev
       - pkg-config
       - clang
