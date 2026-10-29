@@ -1,0 +1,9 @@
+---
+# just (https://github.com/casey/just), installed from the upstream release
+# binary so every distro gets the same version. Bump the version together
+# with both checksums (SHA256SUMS on the release page).
+just_version: "1.59.0"
+just_checksums:
+  x86_64: "sha256:409044617b6f06517c1035e55ca38c8c856ff8b650e41bc2aa1ef82d5903a23e"
+  aarch64: "sha256:23871b1702bfd550fb5f901778fd4290ecf2ee034a45a889fbe96d89b188086d"
+just_install_dir: /usr/local/bin

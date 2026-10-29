@@ -7,3 +7,4 @@
   roles:
     - dev_common
     - rust_build
+    - just

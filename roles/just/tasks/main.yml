@@ -1,0 +1,33 @@
+---
+# This installs the just command runner from its release binary
+
+- name: just | check the architecture is supported
+  assert:
+    that: ansible_architecture in just_checksums
+    fail_msg: "no just checksum for {{ ansible_architecture }}; add one to just_checksums"
+
+- name: just | download release
+  get_url:
+    url: "https://github.com/casey/just/releases/download/{{ just_version }}/just-{{ just_version }}-{{ ansible_architecture }}-unknown-linux-musl.tar.gz"
+    dest: "/tmp/just-{{ just_version }}.tar.gz"
+    checksum: "{{ just_checksums[ansible_architecture] }}"
+    mode: '0644'
+
+- name: just | install binary
+  unarchive:
+    src: "/tmp/just-{{ just_version }}.tar.gz"
+    dest: "{{ just_install_dir }}"
+    remote_src: true
+    include: [just]
+    mode: '0755'
+
+- name: just | remove download
+  file:
+    path: "/tmp/just-{{ just_version }}.tar.gz"
+    state: absent
+
+- name: just | check version
+  command: "{{ just_install_dir }}/just --version"
+  register: just_installed
+  changed_when: false
+  failed_when: just_installed.stdout != 'just ' ~ just_version
